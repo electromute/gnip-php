@@ -5,11 +5,7 @@
  */
 class GnipHelper
 {
-<<<<<<< .mine
-    var $GNIP_BASE_URL = "http://localhost:8081";
-=======
-    var $GNIP_BASE_URL = "https://local.gnipcentral.com";
->>>>>>> .r141684
+    var $GNIP_BASE_URL = "https://s.gnipcentral.com";
 
     var $username    = "";
     var $password    = "";
@@ -72,7 +68,6 @@ class GnipHelper
 	 */
     function doHttpPost($url, $data)
 	{
-	echo 'data is ' . $data;
 		$curl = curl_init();
 		$loginInfo = sprintf("%s:%s",$this->username,$this->password);
 
@@ -82,20 +77,27 @@ class GnipHelper
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-		curl_setopt($curl, CURLOPT_VERBOSE, 1);
+		// curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
+		curl_setopt($curl, CURLOPT_STDERR, STDOUT);  // spit the crap into stdout
 		curl_setopt($curl, CURLOPT_HTTPHEADER,
 		array("Content-Type: application/xml","Authorization: Basic ".base64_encode($loginInfo)));
-
-<<<<<<< .mine
-=======
-        $loginInfo = sprintf("%s:%s",$this->username,$this->password);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
->>>>>>> .r141684
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	    $response = curl_exec($curl);
+	    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		curl_close($curl);
+		    
+	    switch($http_code){
+		
+	      case 200:
+	         return $response;
+             break;
 
-		$response = curl_exec ($curl);
-		curl_close ($curl);
-		return $response;
+	      default:
+	  	      throw new Exception("HTTP Request Failed.\nHttp Status was:" . $http_code . "\nHttp Response was:" . $response . "\n");
+	          break;
+	    }
     }
 
     /**

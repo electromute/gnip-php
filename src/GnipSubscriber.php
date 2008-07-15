@@ -38,7 +38,6 @@ class GnipSubscriber
     function create_collection($collection_xml)
 	{
 
-    echo 'XML is ' . $collection_xml . "\n";
     $url = $this->helper->GNIP_BASE_URL . "/collections.xml";
 
 		return $this->helper->doHttpPost($url, $collection_xml);

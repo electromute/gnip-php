@@ -1,18 +1,12 @@
-<?php
-require_once 'PHPUnit/Framework.php';
-
-function __autoload($class_name) {
-    $dir = dirname(__FILE__);
-    $path = $dir.'/../src/' . $class_name . '.php';
-    require_once $path;
-}
+ <?php
+require_once dirname(__FILE__).'/test_helper.php';
 
 class GnipSubscriberTest extends PHPUnit_Framework_TestCase {
 
   public function setUp() {
-    $this->username = "system@gnipcentral.com";
-    $this->password = "sys3tem";
-    $this->publisher = "nytimes";
+    $this->username = "jeremy.lightsmith@gmail.com";
+    $this->password = "test";
+    $this->publisher = "bob";
 
     $this->gnipSubscriber = new GnipSubscriber($this->username, $this->password);
     $currentTime = time();
@@ -33,16 +27,15 @@ class GnipSubscriberTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_create_collection() {
-    $collection = '<?xml version="1.0" encoding="UTF-16"?>\n' .
-        '<collection name="phpTest123">\n' .
-          '<uid name="me" publisher.name="'. $this->publisher . '"/>'.
-          '<uid name="you" publisher.name="'. $this->publisher . '"/>'.
-        '</collection>';
-
-
-    $response = $this->gnipSubscriber->create_collection($collection);
-    echo 'response is ' . $response;
-    $this->assertContains('<result>Success</result>', $response);
+    $collection = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<collection name="phpTest123">
+  <uid name="me" publisher.name="{$this->publisher}"/>
+  <uid name="you" publisher.name="{$this->publisher}"/>
+</collection>
+XML;
+    $response = $this->gnipSubscriber->create_collection(utf8_encode($collection));    
+    $this->assertContains("<result>Success</result>", $response);
   }
 
   public function test_find_collection() {
@@ -51,15 +44,16 @@ class GnipSubscriberTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_update_collection() {
-    $collection_update = '<?xml version="1.0" encoding="UTF-16"?>\n' .
-        '<collection name="phpTest123">\n' .
-          '<uid name="me" publisher.name="'. $this->publisher . '"/>'.
-          '<uid name="you" publisher.name="'. $this->publisher . '"/>'.
-          '<uid name="bob" publisher.name="'. $this->publisher . '"/>'.
-        '</collection>';
-    $response = $this->gnipSubscriber->update_collection('phpTest123', $collection_update);
-    echo 'response is ' . $response;
-    $this->assertContains('<result>Success</result>', $response);
+    $collection_update = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<collection name="apitestcollection"><uid name="me" publisher.name="{$this->publisher}"/>
+<uid name="you" publisher.name="{$this->publisher}"/>
+<uid name="bob" publisher.name="{$this->publisher}"/>
+</collection>
+XML;
+
+	$response = $this->gnipSubscriber->update_collection('apitestcollection', $collection_update);
+	$this->assertContains('<result>Success</result>', $response);
   }
 
 

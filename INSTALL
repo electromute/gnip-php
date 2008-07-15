@@ -1,0 +1,18 @@
+install php5 w/ pear
+	* on osx this is
+		> sudo port install curl +ipv6 +ssl
+		> sudo port install php5 +apache2 +pear
+
+install phpunit
+
+	> sudo pear channel-discover pear.phpunit.de
+	> sudo pear install phpunit/PHPUnit
+	
+install phing 2.3.*
+	
+	> sudo pear channel-discover pear.phing.info
+	> sudo pear install phing/phing
+	
+to run tests
+
+	> phing

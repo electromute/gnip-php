@@ -1,5 +1,5 @@
 <?php
-require 'XML_serializser'
+require 'XML/Serializer.php';
 function __autoload($class_name) {
     $dir = dirname(__FILE__);
     $path = $dir.'/../src/' . $class_name . '.php';
@@ -40,8 +40,8 @@ function __autoload($class_name) {
     }
 
     $collectionFromFunction = makeCollectionXml("test","testCollection","blah", array("oneid","twoids"));
-    $username = "system@gnipcentral.com";
-    $password = "sys3tem";
+    $username = "jeremy.lightsmith@gmail.com";
+    $password = "test";
 
     $gnipSubscriber = new GnipSubscriber($username, $password);
 

@@ -1,0 +1,11 @@
+<project name="Gnip-PHP" basedir="." default="test">
+  <target name="test">
+    <phpunit2 haltonfailure="true" printsummary="true">
+      <batchtest>
+        <fileset dir="test">
+          <include name="*Test.php"/>
+        </fileset>
+      </batchtest>
+    </phpunit2>
+  </target>
+</project>
