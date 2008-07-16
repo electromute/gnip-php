@@ -31,19 +31,34 @@ class GnipPublisher
 	/**
 	 * Publish activities.
 	 * 
-	 * @type activity string
-	 * @param activity XML document formatted to Gnip schema
+	 * @type activity array
+	 * @param Array of Activity 
 	 * @return string containing response from the server
 	 * 
 	 * This method takes in a XML document with a list of activities 
 	 * sends it to the Gnip server.
 	 */
-    function publish($activity)
+    function publish($activities)
 	{
+        
         $url = $this->helper->GNIP_BASE_URL . "/publishers/" . $this->publisher
 			. "/activity.xml";
-
-		return $this->helper->doHttpPost($url, $activity);
+        $xmlString = $this->buildActivitiesXml($activities);
+        $xmlString = str_replace('<?xml version="1.0"?>','<?xml version="1.0" encoding="UTF-8"?>',$xmlString);
+		return $this->helper->doHttpPost($url,$xmlString);
+	}
+	
+	private function buildActivitiesXml($activities)
+	{
+		$activitiesXML = "";
+		foreach($activities as $a)
+		{
+			$activitiesXML = $activitiesXML . $a->toXML();
+		}
+		$xml = new SimpleXMLElement(utf8_encode('<activities>' . $activitiesXML . '</activities>'));
+		$dom = DomDocument::loadXML($xml->asXML());
+	    $dom->schemaValidate(dirname(__FILE__) . '/Gnip/gnip.xsd'); 
+		return $xml->asXML();
 	}
 };
 

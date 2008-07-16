@@ -16,14 +16,28 @@ class GnipSubscriberTest extends PHPUnit_Framework_TestCase {
   public function testGet() {
     $gnipPublisher = new GnipPublisher($this->username, $this->password, $this->publisher);
     $currentTime = time();
-    $currentTimeString = gmdate(DATE_ISO8601, $currentTime);
-
-    $activity = '<?xml version="1.0" encoding="UTF-8"?>'.'<activities>'. '<activity at="' . $currentTimeString . '" type="added_friend" uid="me"/>' . '</activities>';
-    $response = $gnipPublisher->publish($activity);
+    $currentTimeString = gmdate(DATE_ATOM, $currentTime);
+    // Abuse the guid for this test.
+    $activity = new Activity($currentTimeString, 'me','added_friend', $currentTimeString);
+    $response = $gnipPublisher->publish(array($activity));
     $this->assertContains('<result>Success</result>', $response);
 
     $response = $this->gnipSubscriber->get($this->publisher);
-    $this->assertContains($this->currentTimeString, $response);
+
+    $xml = new SimpleXMLElement($response);
+    $nodes = $xml->xpath('/activities/activity');
+/*  http://www.php.net/simplexmlelement   #xpath
+    while($node = each($activity_nodes))
+    {
+	    $node->at
+	    $node->guid
+	    $node->uid
+	    $node->type
+    }
+*/
+    $dateFromGuid = new DateTime($nodes[0]->at);
+    $dateFromCurrentTimeString = new DateTime($currentTimeString);
+    $this->assertEquals($dateFromCurrentTimeString, $dateFromGuid);
   }
 
   public function test_create_collection() {
