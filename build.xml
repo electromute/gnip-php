@@ -1,6 +1,7 @@
 <project name="Gnip-PHP" basedir="." default="test">
   <target name="test">
-    <phpunit2 haltonfailure="true" printsummary="true">
+    <phpunit2 haltonfailure="false" printsummary="true">
+	  <formatter type="plain" usefile="false" />
       <batchtest>
         <fileset dir="test">
           <include name="*Test.php"/>

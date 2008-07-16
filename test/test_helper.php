@@ -5,6 +5,8 @@ require_once 'PHPUnit/Framework.php';
 require_once $dirName . '/../src/Gnip/Activity.php';
 require_once $dirName . '/../src/Gnip/Collection.php';
 require_once $dirName . '/../src/Gnip/Publisher.php';
+require_once $dirName . '/../src/Gnip/Uid.php';
+
 function __autoload($class_name) {
 	$dir = dirname(__FILE__);
     $path = $dir . '/../src/' . $class_name . '.php';

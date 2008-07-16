@@ -56,8 +56,9 @@ class GnipPublisher
 			$activitiesXML = $activitiesXML . $a->toXML();
 		}
 		$xml = new SimpleXMLElement(utf8_encode('<activities>' . $activitiesXML . '</activities>'));
-		$dom = DomDocument::loadXML($xml->asXML());
-	    $dom->schemaValidate(dirname(__FILE__) . '/Gnip/gnip.xsd'); 
+		$doc = new DOMDocument();
+		$doc->loadXML($xml->asXML());
+	    $doc->schemaValidate(dirname(__FILE__) . '/Gnip/gnip.xsd'); 
 		return $xml->asXML();
 	}
 };
