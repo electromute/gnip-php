@@ -40,3 +40,49 @@ ADDITIONAL NOTES:
 and "GnipSubscriberTest". The test cases also provide examples of usage.
 Note that you'll need to fill in the information for the constructors, 
 in order for the test cases to work properly.
+
+require_once 'Services/Gnip'
+
+$gnip = new Services_Gnip($username, $password);
+
+/**
+ *  Get a publishers activities.
+ */
+$digg = $gnip->getPublisher('digg');
+$gnip->getActivities($digg, [$time]);
+
+$gnip->publish($digg, $activiies)
+
+/**
+ *  Get a collections activities.
+ */
+$myCollection = $gnip->getCollection('myCollection');
+$gnip->getActivities($myCollection);
+
+
+/**
+ *  Create a collection
+ */
+$collection = Services_Gnip_Collection('myCollection');
+$collection->uids[] = new Uid('name','publisher name');
+$collection->uids[] = new Uid('name','publisher name');
+
+$gnip->create($collection);
+
+
+/**
+ *  Modify a collection
+ */
+$collection = $gnip->getCollection('myCollection');
+$collection->uids[] = new Uid('name','publisher name');
+
+$gnip->update($collection);
+
+
+/**
+ *  Delete a publisher/collection
+ */
+$gnip->delete($digg);
+$gnip->delete($collection);
+
+
