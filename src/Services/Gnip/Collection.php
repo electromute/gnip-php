@@ -34,7 +34,7 @@ class Services_Gnip_Collection
     
     public function toXML()
     {
-        $xml = new GnipSimpleXMLElement("<collection/>", LIBXML_NOXMLDECL); // NOXMLDECL only in libxml >= 2.6.21
+        $xml = new GnipSimpleXMLElement("<collection/>");
         $xml->addAttribute('name', $this->name);
         $xml->addOptionalAttribute('postUrl', $this->postURL);
         foreach($this->uids as $uid){
@@ -61,7 +61,7 @@ class Services_Gnip_Collection
     
     public function getUrl()
     {
-        return "/collections/".$this->name.".xml";
+        return "/collections/".$this->name;
     }
 }
 ?>

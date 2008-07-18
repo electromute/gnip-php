@@ -9,11 +9,29 @@ class Services_Gnip_Publisher
     { 
         $this->name = trim($name);
     }
+
     function toXML()
     {
-	    $xml = new GnipSimpleXMLElement("<publisher/>", LIBXML_NOXMLDECL); // NOXMLDECL only in libxml >= 2.6.21
-		$xml->addAttribute('name', $this->name);
-		return $xml->asXML();
+        $xml = new GnipSimpleXMLElement("<publisher/>");
+        $xml->addAttribute('name', $this->name);
+        return $xml->asXML();
+    }
+    
+    function fromXML($xml) 
+    {
+        if ($xml->getName() != 'publisher') { throw new Exception("expected publisher"); }
+        
+        return new Services_Gnip_Publisher($xml["name"]);
+    }
+    
+    public function getUrl()
+    {
+        return "/publishers/".$this->name;
+    }
+    
+    public static function getIndexUrl()
+    {
+        return "/publishers.xml";
     }
 }
 ?>
