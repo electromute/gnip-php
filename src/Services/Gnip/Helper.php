@@ -18,22 +18,33 @@ class Services_Gnip_Helper
 
     function doHttpGet($url)
     {
-        return $this->doRequest($this->base_url.$url);
+        return $this->doRequest($this->base_url.$url, null);
     }
 
     function doHttpPost($url, $data)
     {
-        return $this->doRequest($this->base_url.$url, array(CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $data));
+        $this->validate($data);
+        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_POST => true));
     }
 
     function doHttpPut($url, $data)
     {
-        $this->doRequest($this->base_url.$url, array(CURLOPT_PUT => true, CURLOPT_POSTFIELDS => utf8_encode($data)));
+        $this->validate($data);
+        $this->doRequest($this->base_url.$url.";edit", $data, array(CURLOPT_POST => true));
+        # utf8_encode()
     }
 
     function doHttpDelete($url)
     {
-        $this->doRequest($this->base_url.$url.";delete", array(CURLOPT_POST => true));
+        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_POST => true));
+    }
+    
+    private function validate($xml) 
+    {
+        $doc = new DOMDocument();
+        $doc->loadXML($xml);
+        $doc->schemaValidate(dirname(__FILE__) . '/gnip.xsd'); 
+        return $xml;
     }
 
     /**
@@ -116,13 +127,24 @@ class Services_Gnip_Helper
         return gmdate("YmdHi", $this->roundTimeToNearestFiveMinutes($time));
     }
     
-    function doRequest($url, $curl_options = array())
+    function doRequest($url, $data, $curl_options = array())
     {
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/xml",
-                                                     "Authorization: Basic ".base64_encode($loginInfo)));
+        $headers = array("Content-Type: application/xml",
+                         "Authorization: Basic ".base64_encode($loginInfo));
+        if ($data != null) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            if ($curl_options[CURLOPT_PUT] != null) {
+                curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
+                $headers[] = 'Expect:';
+                $headers[] = "Content-Length: ".strlen($data);
+                print "\n\n---------------\n\n".$data;
+            }
+        }
+        
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
 

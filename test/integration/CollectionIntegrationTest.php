@@ -7,7 +7,8 @@ class CollectionIntegrationTest extends PHPUnit_Framework_TestCase
     {
         $this->gnip = new Services_Gnip("jeremy.lightsmith@gmail.com", "test");
         $this->collection = new Services_Gnip_Collection(uniqid('apitestcollection'));
-        
+        $this->collection->uids = array(new Services_Gnip_Uid("me", "digg"));
+
         $this->gnip->createCollection($this->collection);
     }
     
@@ -23,7 +24,6 @@ class CollectionIntegrationTest extends PHPUnit_Framework_TestCase
     
     public function testCanUpdateCollection()
     {
-        $this->collection->uids[] = new Services_Gnip_Uid("me", "digg");
         $this->collection->uids[] = new Services_Gnip_Uid("you", "flickr");
         
         $this->gnip->updateCollection($this->collection);

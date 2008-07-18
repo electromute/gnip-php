@@ -13,12 +13,17 @@ class MockHelper
         return $this->call('post', $url, $value);
     }
     
+    function doHttpDelete($url)
+    {
+        $this->call('delete', $url);
+    }
+    
     /**
      * options:
      *   value: 
      *   return: 
      */
-    function expect($method, $url, $options) 
+    function expect($method, $url, $options = array()) 
     {
         $this->call = $options;
         $this->call['method'] = $method;
@@ -82,6 +87,22 @@ class GnipTest extends PHPUnit_Framework_TestCase
     
     function testCreateCollection()
     {
+        $c = new Services_Gnip_Collection("mycollection");
+        $c->uids = array(new Services_Gnip_Uid("me", "digg"));
+
+        $this->helper->expect('post', '/collections.xml', 
+                              array('value' => $c->toXML()));
+                              
+        $this->gnip->createCollection($c);
+    }
+
+    function testDeleteCollection()
+    {
+        $c = new Services_Gnip_Collection("mycollection");
+
+        $this->helper->expect('delete', '/collections/mycollection.xml');
+                              
+        $this->gnip->deleteCollection($c);
     }
 }
 ?>
