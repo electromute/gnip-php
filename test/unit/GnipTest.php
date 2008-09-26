@@ -65,7 +65,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
 
     function testPublish()
     {
-        $a = new Services_Gnip_Activity(new DateTime(), "uid", "type");
+        $a = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', 'blog_post', 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
 
         $this->helper->expect('post', '/publishers/bob/activity.xml', 
                               array('value' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
@@ -76,33 +76,36 @@ class GnipTest extends PHPUnit_Framework_TestCase
 
     function testGetCurrentActivities()
     {
-        $a = new Services_Gnip_Activity(new DateTime(), "uid", "type");
+        $a = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', 'blog_post', 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
 
         $this->helper->expect('get', '/publishers/digg/activity/current.xml', 
                               array('and_return' => "<activities>".$a->toXML()."</activities>"));
                               
-        $activities = $this->gnip->getActivities(new Services_Gnip_Publisher('digg'));
+        $activities = $this->gnip->getPublisherActivities(new Services_Gnip_Publisher('digg'));
         $this->assertEquals($a, $activities[0]);
     }
     
-    function testCreateCollection()
+    function testCreateFilter()
     {
-        $c = new Services_Gnip_Collection("mycollection");
-        $c->uids = array(new Services_Gnip_Uid("me", "digg"));
+		$rules = array(new Services_Gnip_Rule("actor", "me"), new Services_Gnip_Rule("actor", "you"), new Services_Gnip_Rule("actor", "bob"));
 
-        $this->helper->expect('post', '/collections.xml', 
-                              array('value' => $c->toXML()));
+        $f = new Services_Gnip_Filter('test', 'true', '', '', $rules);
+
+        $this->helper->expect('post', '/publishers/digg/filters.xml', 
+                              array('value' => $f->toXML()));
                               
-        $this->gnip->createCollection($c);
+        $this->gnip->createFilter("digg", $f);
     }
 
-    function testDeleteCollection()
+    function testDeleteFilter()
     {
-        $c = new Services_Gnip_Collection("mycollection");
+		$rules = array(new Services_Gnip_Rule("actor", "me"), new Services_Gnip_Rule("actor", "you"), new Services_Gnip_Rule("actor", "bob"));
 
-        $this->helper->expect('delete', '/collections/mycollection.xml');
+        $f = new Services_Gnip_Filter('test', 'true', '', '', $rules);
+
+        $this->helper->expect('delete', '/publishers/digg/filters/test.xml');
                               
-        $this->gnip->deleteCollection($c);
+        $this->gnip->deleteFilter("digg", $f);
     }
 }
 ?>

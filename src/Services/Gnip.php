@@ -1,15 +1,15 @@
 <?php
 require_once 'Gnip/Activity.php';
-require_once 'Gnip/Collection.php';
+require_once 'Gnip/Filter.php';
 require_once 'Gnip/GnipSimpleXMLElement.php';
 require_once 'Gnip/Helper.php';
 require_once 'Gnip/Publisher.php';
-require_once 'Gnip/Uid.php';
+require_once 'Gnip/Rule.php';
 
 
 class Services_Gnip
 {
-    static public $uri = "https://s.gnipcentral.com";
+    static public $uri = "https://review.gnipcentral.com";
     public $helper;
     
     public function __construct($username, $password)
@@ -54,40 +54,50 @@ class Services_Gnip
         return $this->helper->doHttpPost($publisher->getUrl()."/activity.xml", $xmlString);
     }
     
-    function getActivities($resource, $when = "current") 
+    function getPublisherActivities($publisher, $when = "current") 
     {
         if ($when != "current") { $when = $this->helper->bucketName($when); }
-        return $this->parseActivities($this->helper->doHttpGet($resource->getUrl()."/activity/".$when.".xml"));
+        return $this->parseActivities($this->helper->doHttpGet($publisher->getUrl()."/activity/".$when.".xml"));
     }
-    
-    function createCollection($collection)
+	
+	function getPublisherNotifications($publisher, $when = "current") 
     {
-        $this->helper->doHttpPost($collection->getCreateUrl(), $collection->toXML());
+        if ($when != "current") { $when = $this->helper->bucketName($when); }
+        return $this->parseActivities($this->helper->doHttpGet($publisher->getUrl()."/notification/".$when.".xml"));
     }
 
-    /**
-     * Find a Gnip collection.
-     *
-     * @type name string
-     * @param name The name of the collection to find
-     * @return string containing response from the server
-     *
-     */
-    function getCollection($name)
+	function getFilterActivities($publisher, $filter, $when = "current") 
     {
-        $collection = new Services_Gnip_Collection($name);
-        $xml = $this->helper->doHttpGet($collection->getUrl().".xml");
-        return Services_Gnip_Collection::fromXML(new SimpleXMLElement($xml));
+        if ($when != "current") { $when = $this->helper->bucketName($when); }
+        return $this->parseActivities($this->helper->doHttpGet($filter->getUrl($publisher)."/activity/".$when.".xml"));
+    }
+
+	function getFilterNotifications($publisher, $filter, $when = "current") 
+    {
+        if ($when != "current") { $when = $this->helper->bucketName($when); }
+        return $this->parseActivities($this->helper->doHttpGet($filter->getUrl($publisher)."/notification/".$when.".xml"));
     }
     
-    function updateCollection($collection)
+    function createFilter($publisher, $filter)
     {
-        $this->helper->doHttpPut($collection->getUrl().".xml", $collection->toXML());
+        $this->helper->doHttpPost($filter->getCreateUrl($publisher), $filter->toXML());
+    }
+
+    function getFilter($publisher, $name)
+    {
+        $filter = new Services_Gnip_Filter($name);
+        $xml = $this->helper->doHttpGet($filter->getUrl($publisher).".xml");
+        return Services_Gnip_Filter::fromXML(new SimpleXMLElement($xml));
     }
     
-    function deleteCollection($collection)
+    function updateFilter($publisher, $filter)
     {
-        $this->helper->doHttpDelete($collection->getUrl().".xml");
+        $this->helper->doHttpPut($filter->getUrl($publisher).".xml", $filter->toXML());
+    }
+    
+    function deleteFilter($publisher, $filter)
+    {
+        $this->helper->doHttpDelete($filter->getUrl($publisher).".xml");
     }
     
     private function parseActivities($xml)

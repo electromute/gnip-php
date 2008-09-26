@@ -14,7 +14,7 @@ class Services_Gnip_Publisher
     {
         $xml = new GnipSimpleXMLElement("<publisher/>");
         $xml->addAttribute('name', $this->name);
-        return $xml->asXML();
+        return trim($xml->asXML());
     }
     
     function fromXML($xml) 

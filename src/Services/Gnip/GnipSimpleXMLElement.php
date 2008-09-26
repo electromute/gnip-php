@@ -5,12 +5,17 @@
  */
 class GnipSimpleXMLElement extends SimpleXMLElement
 {
-    // $xml = new GnipSimpleXMLElement("<uid/>", LIBXML_NOXMLDECL); // NOXMLDECL only in libxml >= 2.6.21
-    
     public function addOptionalAttribute($name, $value)
     {
         if(! empty($value)) {
           parent::addAttribute($name, $value);
+        }
+    }
+
+	public function addOptionalChild($name, $value)
+    {
+        if(!empty($value)) {
+          parent::addChild($name, $value);
         }
     }
     
