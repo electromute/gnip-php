@@ -20,19 +20,6 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->gnip->getPublisher(""), $this->publisher);
     }
 
-    public function testPublishAndGetActivities()
-    {
-		$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
-
-        $this->gnip->publish($this->publisher, array($activity));
-
-        $activities = $this->gnip->getPublisherActivities($this->publisher);
-        assertContains($activity, $activities);
-
-        $activities = $this->gnip->getPublisherActivities($this->publisher, time());
-        assertContains($activity, $activities);
-    }
-
 	public function testGetNotifications()
     {
 		$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');

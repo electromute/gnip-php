@@ -94,9 +94,7 @@ class GnipSubscriber
             $date_and_time = time();
         }
         $correctedTime = $this->helper->syncWithGnipClock($date_and_time);
-        $roundedTime = $this->helper->
-            roundTimeToNearestFiveMinutes($correctedTime);
-        $timeString = $this->helper->timeToString($roundedTime);
+        $timeString = $this->helper->timeToString($correctedTime);
 
 
         $url = $this->helper->GNIP_BASE_URL . "/publishers/" . $publisher .
@@ -126,9 +124,7 @@ class GnipSubscriber
         }
 
         $correctedTime = $this->helper->syncWithGnipClock($date_and_time);
-        $roundedTime = $this->helper->
-            roundTimeToNearestFiveMinutes($correctedTime);
-        $timeString = $this->helper->timeToString($roundedTime);
+        $timeString = $this->helper->timeToString($correctedTime);
 
 
         $url = $this->helper->GNIP_BASE_URL . "/collections/" . $name .

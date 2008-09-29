@@ -48,29 +48,6 @@ class Services_Gnip_Helper
     }
 
     /**
-     * Round time to nearest five minutes.
-     *
-     * @type theTime long
-     * @param theTime The time to round
-     * @return long containing the time at previous 5 minute mark
-     *
-     * Rounds the time passed in down to the previous 5 minute mark.
-     */
-    function roundTimeToNearestFiveMinutes($theTime)
-    {
-        $year = (int)gmdate('Y',$theTime);
-        $month = (int)gmdate('m',$theTime);
-        $day = (int)gmdate('d',$theTime);
-        $hour = (int)gmdate('H',$theTime);
-        $min = (int)gmdate('i',$theTime);
-
-        $newMin = $min - ($min % 5);
-
-        // Create a new time object with the rounded minute
-        return gmmktime($hour, $newMin, 0, $month, $day, $year);
-    }
-
-    /**
      * Adjust a time so that it corresponds with Gnip time
      *
      * @type theTime long
@@ -124,7 +101,7 @@ class Services_Gnip_Helper
      */
     function bucketName($time)
     {
-        return gmdate("YmdHi", $this->roundTimeToNearestFiveMinutes($time));
+        return gmdate("YmdHi", $time);
     }
     
     function doRequest($url, $data, $curl_options = array())
