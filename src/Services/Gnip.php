@@ -9,7 +9,7 @@ require_once 'Gnip/Rule.php';
 
 class Services_Gnip
 {
-    static public $uri = "https://review.gnipcentral.com";
+    static public $uri = "https://prod.gnipcentral.com";
     public $helper;
     
     public function __construct($username, $password)

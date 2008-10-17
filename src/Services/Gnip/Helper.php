@@ -30,7 +30,7 @@ class Services_Gnip_Helper
     function doHttpPut($url, $data)
     {
         $this->validate($data);
-        $this->doRequest($this->base_url.$url.";edit", $data, array(CURLOPT_POST => true));
+        return $this->doRequest($this->base_url.$url.";edit", $data, array(CURLOPT_POST => true));
         # utf8_encode()
     }
 
@@ -130,7 +130,7 @@ class Services_Gnip_Helper
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         // curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
-        curl_setopt($curl, CURLOPT_STDERR, STDOUT);  // spit the crap into stdout
+        // curl_setopt($curl, CURLOPT_STDERR, STDOUT);  // spit the crap into stdout
 
         
         foreach ($curl_options as $option => $value) {

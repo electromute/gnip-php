@@ -1,6 +1,6 @@
 = Gnip PHP API Client
 
-This library provides a .Net API for accessing
+This library provides a PHP API for accessing
 Gnip web services.  There are two basic
 roles for using Gnip: subscribers and publishers.  This library
 provides a single API for both roles.
@@ -34,7 +34,7 @@ include some activities before and after the time you specify.
     done by users you care about.
 
 If you would like to filter a set of publishers by the user that
-performed the activity you may create a collection to do so.  Once
+performed the activity you may create a filter to do so.  Once
 created a filter's activity stream is retrieved much like a
 publisher's.  Activity that has already occured will not be included in
 a filter.  Therefore any new filter will be empty until some
@@ -48,17 +48,17 @@ new matching activity has occured.
 	$filter = new Services_Gnip_Filter("myFilter", 'false', '', '', $rules);
 	myFilter.Rules.Add(new Rule("actor", "me"));
 
-	$gnip->createFilter("digg", $this->filter);
-	$gnip->getFilterActivities("digg", $this->filter);
+	$gnip->createFilter("digg", $filter);
+	$gnip->getFilterActivities("digg", $filter);
 
-=== Example 4: Delete a collection
+=== Example 4: Delete a filter
 
-If you decide you no longer need a collection you have created in the
+If you decide you no longer need a filter you have created in the
 past you can remove it.
 
 	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
 
-	$this->gnip->deleteFilter("digg", $this->filter);
+	$gnip->deleteFilter("digg", $filter);
 
 == Publisher
 
@@ -74,5 +74,5 @@ published in it's activity stream.
 		'upload', 'sally', 'blog_post', 'web', 
 		'trains,planes,automobiles', 'bob', 'http://example.com');
 
-        $this->gnip->publish("digg", array($activity));
+        $gnip->publish("digg", array($activity));
 
