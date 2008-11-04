@@ -19,7 +19,6 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
     
     public function tearDown()
     {
-    sleep(20);
         $this->gnip->deleteFilter($this->publisher, $this->filter);
     }
     
