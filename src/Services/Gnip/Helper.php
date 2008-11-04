@@ -36,7 +36,7 @@ class Services_Gnip_Helper
 
     function doHttpDelete($url)
     {
-        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_CUSTOMREQUEST => "DELETE"));
+        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_POST => true, CURLOPT_POSTFIELDS => ""));
     }
     
     private function validate($xml) 
@@ -109,7 +109,7 @@ class Services_Gnip_Helper
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
-        $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.0"
+        $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.0",
                          "Authorization: Basic ".base64_encode($loginInfo));
         if ($data != null) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
