@@ -36,7 +36,7 @@ class Services_Gnip_Helper
 
     function doHttpDelete($url)
     {
-        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_POST => true));
+        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_CUSTOMREQUEST => "DELETE"));
     }
     
     private function validate($xml) 
