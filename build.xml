@@ -5,7 +5,6 @@
             <batchtest>
                 <fileset dir="test">
                     <include name="**/*Test.php"/>
-                    <exclude name="**/integration/PublisherIntegrationTest.php"/>
                 </fileset>
             </batchtest>
         </phpunit2>
