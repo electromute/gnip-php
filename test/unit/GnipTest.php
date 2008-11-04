@@ -89,7 +89,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
     {
 		$rules = array(new Services_Gnip_Rule("actor", "me"), new Services_Gnip_Rule("actor", "you"), new Services_Gnip_Rule("actor", "bob"));
 
-        $f = new Services_Gnip_Filter('test', 'true', '', '', $rules);
+        $f = new Services_Gnip_Filter('test', 'true', '', $rules);
 
         $this->helper->expect('post', '/publishers/digg/filters.xml', 
                               array('value' => $f->toXML()));
@@ -101,7 +101,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
     {
 		$rules = array(new Services_Gnip_Rule("actor", "me"), new Services_Gnip_Rule("actor", "you"), new Services_Gnip_Rule("actor", "bob"));
 
-        $f = new Services_Gnip_Filter('test', 'true', '', '', $rules);
+        $f = new Services_Gnip_Filter('test', 'true', '', $rules);
 
         $this->helper->expect('delete', '/publishers/digg/filters/test.xml');
                               
