@@ -5,15 +5,18 @@ class PublisherTest extends PHPUnit_Framework_TestCase
 {
     function testToXml()
     {
-        $publisher = new Services_Gnip_Publisher('name');
+        $rule_types = array();
+        $rule_types[0] = new Services_Gnip_Rule_Type('actor');
+        $publisher = new Services_Gnip_Publisher('name', $rule_types);
       
-        $this->assertEquals('<publisher name="name"/>', $publisher->toXML());
+        $this->assertEquals('<publisher name="name"><supportedRuleTypes><type>actor</type></supportedRuleTypes></publisher>', $publisher->toXML());
     }
     
     function testFromXml()
     {
-        $publisher = Services_Gnip_Publisher::fromXML(new SimpleXMLElement("<publisher name='bob'/>"));
+        $publisher = Services_Gnip_Publisher::fromXML(new SimpleXMLElement("<publisher name='bob'><supportedRuleTypes><type>actor</type></supportedRuleTypes></publisher>"));
         $this->assertEquals("bob", $publisher->name);
+        $this->assertEquals("actor", $publisher->supported_rule_types[0]->type);
     }
 }
 ?>

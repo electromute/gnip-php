@@ -1,12 +1,13 @@
 <project name="Gnip-PHP" basedir="." default="test">
-  <target name="test">
-    <phpunit2 haltonfailure="false" printsummary="true">
-   <formatter type="plain" usefile="false" />
-      <batchtest>
-        <fileset dir="test">
-          <include name="**/*Test.php"/>
-        </fileset>
-      </batchtest>
-    </phpunit2>
-  </target>
+    <target name="test">
+        <phpunit2 haltonfailure="false" printsummary="true">
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset dir="test">
+                    <include name="**/*Test.php"/>
+                    <exclude name="**/integration/PublisherIntegrationTest.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit2>
+    </target>
 </project>

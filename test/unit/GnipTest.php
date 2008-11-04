@@ -50,7 +50,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
     function testGetPublishers()
     {
         $this->helper->expect('get', '/publishers.xml', 
-                              array('and_return' => "<publishers><publisher name='bob'/></publishers>"));
+                              array('and_return' => "<publishers><publisher name='bob'><supportedRuleTypes><type>actor</type></supportedRuleTypes></publisher></publishers>"));
         $publishers = $this->gnip->getPublishers();
         $this->assertEquals("bob", $publishers[0]->name);
     }
@@ -58,7 +58,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
     function testGetPublisher()
     {
         $this->helper->expect('get', '/publishers/bob.xml', 
-                              array('and_return' => "<publisher name='bob'/>"));
+                              array('and_return' => "<publisher name='bob'><supportedRuleTypes><type>actor</type></supportedRuleTypes></publisher>"));
         $publisher = $this->gnip->getPublisher('bob');
         $this->assertEquals("bob", $publisher->name);
     }
@@ -71,7 +71,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
                               array('value' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
                                                "<activities>".$a->toXML()."</activities>\n"));
                               
-        $this->gnip->publish(new Services_Gnip_Publisher('bob'), array($a));
+        $this->gnip->publish(new Services_Gnip_Publisher('bob', array()), array($a));
     }
 
     function testGetCurrentActivities()
@@ -81,7 +81,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
         $this->helper->expect('get', '/publishers/digg/activity/current.xml', 
                               array('and_return' => "<activities>".$a->toXML()."</activities>"));
                               
-        $activities = $this->gnip->getPublisherActivities(new Services_Gnip_Publisher('digg'));
+        $activities = $this->gnip->getPublisherActivities(new Services_Gnip_Publisher('digg', array()));
         $this->assertEquals($a, $activities[0]);
     }
     

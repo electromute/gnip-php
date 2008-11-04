@@ -5,6 +5,7 @@ require_once 'Gnip/GnipSimpleXMLElement.php';
 require_once 'Gnip/Helper.php';
 require_once 'Gnip/Publisher.php';
 require_once 'Gnip/Rule.php';
+require_once 'Gnip/RuleType.php';
 
 
 class Services_Gnip
