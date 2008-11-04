@@ -5,8 +5,8 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
 {
     public function setUp() 
     {
-        $this->gnip = new Services_Gnip("", "");
-		$this->publisher = "";
+        $this->gnip = new Services_Gnip("test@gnipcentral.com", "test1test");
+		$this->publisher = "gniptest";
 
 		$rules = array(new Services_Gnip_Rule("actor", "me"), 
 			new Services_Gnip_Rule("actor", "you"), 
@@ -19,7 +19,7 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
     
     public function tearDown()
     {
-        $this->gnip->deleteFilter($this->publisher, $this->filter);
+        //$this->gnip->deleteFilter($this->publisher, $this->filter);
     }
     
     public function testCanCreateFilter()
@@ -41,9 +41,9 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertContains("tom", $retrievedFilter->toXML());
     }
     
-    public function testCanGetActivities()
+    public function testCanGetNotifications()
     {
-        $this->gnip->getFilterActivities($this->publisher, $this->filter);
+        $this->gnip->getFilterNotifications($this->publisher, $this->filter);
     }
 }
 ?>
