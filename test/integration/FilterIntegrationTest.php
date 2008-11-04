@@ -5,8 +5,8 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
 {
     public function setUp() 
     {
-        $this->gnip = new Services_Gnip("test@gnipcentral.com", "test1test");
-		$this->publisher = "gniptest";
+        $this->gnip = new Services_Gnip("", "");
+		$this->publisher = "";
 
 		$rules = array(new Services_Gnip_Rule("actor", "me"), 
 			new Services_Gnip_Rule("actor", "you"), 
