@@ -29,9 +29,10 @@ class Services_Gnip_Publisher
         if ($xml->getName() != 'publisher') { throw new Exception("expected publisher"); }
         $publisher = new Services_Gnip_Publisher($xml["name"], array());
         $supportedRuleTypes = $xml->supportedRuleTypes;
-
-        foreach($supportedRuleTypes->children() as $rule_type){
-            $publisher->supported_rule_types[] = Services_Gnip_Rule_Type::fromXML($rule_type);
+        if($supportedRuleTypes) {
+            foreach($supportedRuleTypes->children() as $rule_type){
+                $publisher->supported_rule_types[] = Services_Gnip_Rule_Type::fromXML($rule_type);
+            }
         }
         return $publisher;
     }
