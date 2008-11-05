@@ -81,7 +81,7 @@ class Services_Gnip
     
     function createFilter($publisher, $filter)
     {
-        $this->helper->doHttpPost($filter->getCreateUrl($publisher), $filter->toXML());
+        return $this->helper->doHttpPost($filter->getCreateUrl($publisher), $filter->toXML());
     }
 
     function getFilter($publisher, $name)
@@ -93,12 +93,12 @@ class Services_Gnip
     
     function updateFilter($publisher, $filter)
     {
-        $this->helper->doHttpPut($filter->getUrl($publisher).".xml", $filter->toXML());
+        return $this->helper->doHttpPut($filter->getUrl($publisher).".xml", $filter->toXML());
     }
     
     function deleteFilter($publisher, $filter)
     {
-        $this->helper->doHttpDelete($filter->getUrl($publisher).".xml");
+        return $this->helper->doHttpDelete($filter->getUrl($publisher).".xml");
     }
     
     private function parseActivities($xml)
