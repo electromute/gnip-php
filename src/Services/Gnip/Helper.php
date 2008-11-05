@@ -24,19 +24,26 @@ class Services_Gnip_Helper
     function doHttpPost($url, $data)
     {
         $this->validate($data);
-        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_POST => true));
+        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data)
+        );
     }
 
     function doHttpPut($url, $data)
     {
         $this->validate($data);
-        return $this->doRequest($this->base_url.$url.";edit", $data, array(CURLOPT_POST => true));
-        # utf8_encode()
+        $fh = fopen('php://memory','r+');
+        fwrite($fh, $data);
+        rewind($fh);
+        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_PUT => true,
+            CURLOPT_INFILE => $fh,
+            CURLOPT_INFILESIZE => strlen($data))
+        );
     }
 
     function doHttpDelete($url)
     {
-        $this->doRequest($this->base_url.$url.";delete", null, array(CURLOPT_POST => true, CURLOPT_POSTFIELDS => ""));
+        $this->doRequest($this->base_url.$url, null, array(CURLOPT_CUSTOMREQUEST => "DELETE"));        
     }
     
     private function validate($xml) 
@@ -104,23 +111,13 @@ class Services_Gnip_Helper
         return gmdate("YmdHi", $time);
     }
     
-    function doRequest($url, $data, $curl_options = array())
+    function doRequest($url, $data, $curl_options = array(), $isGzipEncoded = false)
     {
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
         $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.0",
                          "Authorization: Basic ".base64_encode($loginInfo));
-        if ($data != null) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            if ($curl_options[CURLOPT_PUT] != null) {
-                curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
-                $headers[] = 'Expect:';
-                $headers[] = "Content-Length: ".strlen($data);
-                print "\n\n---------------\n\n".$data;
-            }
-        }
-        
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
@@ -129,9 +126,9 @@ class Services_Gnip_Helper
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        // curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
-        // curl_setopt($curl, CURLOPT_STDERR, STDOUT);  // spit the crap into stdout
 
+        //curl_setopt($curl, CURLOPT_VERBOSE, 1);   // litter logs with crap
+        //curl_setopt($curl, CURLOPT_STDERR, STDOUT);  // spit the crap into stdout
         
         foreach ($curl_options as $option => $value) {
             curl_setopt($curl, $option, $value);
