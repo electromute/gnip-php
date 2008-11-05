@@ -18,32 +18,36 @@ class Services_Gnip_Helper
 
     function doHttpGet($url)
     {
-        return $this->doRequest($this->base_url.$url, null);
+        return $this->doRequest($this->base_url.$url);
     }
 
     function doHttpPost($url, $data)
     {
         $this->validate($data);
-        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data)
+        if($data != null)
+            $data = gzencode($data);
+        return $this->doRequest($this->base_url.$url, array(CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data), true
         );
     }
 
     function doHttpPut($url, $data)
     {
         $this->validate($data);
-        $fh = fopen('php://memory','r+');
+        if($data != null)
+            $data = gzencode($data);
+        $fh  = fopen('php://memory','r+');
         fwrite($fh, $data);
         rewind($fh);
-        return $this->doRequest($this->base_url.$url, $data, array(CURLOPT_PUT => true,
+        return $this->doRequest($this->base_url.$url, array(CURLOPT_PUT => true,
             CURLOPT_INFILE => $fh,
-            CURLOPT_INFILESIZE => strlen($data))
+            CURLOPT_INFILESIZE => strlen($data)), true
         );
     }
 
     function doHttpDelete($url)
     {
-        $this->doRequest($this->base_url.$url, null, array(CURLOPT_CUSTOMREQUEST => "DELETE"));        
+        $this->doRequest($this->base_url.$url, array(CURLOPT_CUSTOMREQUEST => "DELETE"));
     }
     
     private function validate($xml) 
@@ -111,13 +115,16 @@ class Services_Gnip_Helper
         return gmdate("YmdHi", $time);
     }
     
-    function doRequest($url, $data, $curl_options = array(), $isGzipEncoded = false)
+    function doRequest($url, $curl_options = array(), $isGzipEncoded = false)
     {
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
         $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.0",
                          "Authorization: Basic ".base64_encode($loginInfo));
+        if($isGzipEncoded)
+            $headers[] = 'Content-Encoding: gzip';
+
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
