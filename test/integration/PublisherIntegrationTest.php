@@ -6,9 +6,13 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
     public function setUp() 
     {
         $this->gnip = new Services_Gnip("", "");
-        $this->publisher = new Services_Gnip_Publisher("");
+
+        $rule_types = array();
+        $rule_types[0] = new Services_Gnip_Rule_Type('actor');
+
+        $this->publisher = new Services_Gnip_Publisher("", $rule_types);
     }
-    
+
     public function testGetPublishers()
     {
         $publishers = $this->gnip->getPublishers();
