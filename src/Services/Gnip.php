@@ -101,7 +101,7 @@ class Services_Gnip
         return $this->helper->doHttpDelete($filter->getUrl($publisher).".xml");
     }
     
-    private function parseActivities($xml)
+    function parseActivities($xml)
     {
         $xml = new SimpleXMLElement($xml);
         $activities = array();
