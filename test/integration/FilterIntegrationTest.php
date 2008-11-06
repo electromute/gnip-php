@@ -12,7 +12,7 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
 			new Services_Gnip_Rule("actor", "you"), 
 			new Services_Gnip_Rule("actor", "bob"));
 
-        $this->filter = new Services_Gnip_Filter(uniqid('apitestfilter'), 'false', '', '', $rules);
+        $this->filter = new Services_Gnip_Filter(uniqid('apitestfilter'), 'false', '', $rules);
 
         $this->gnip->createFilter($this->publisher, $this->filter);
     }
