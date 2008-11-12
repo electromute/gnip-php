@@ -6,6 +6,7 @@ require_once 'Gnip/Helper.php';
 require_once 'Gnip/Publisher.php';
 require_once 'Gnip/Rule.php';
 require_once 'Gnip/RuleType.php';
+require_once 'Gnip/Payload.php';
 
 
 class Services_Gnip

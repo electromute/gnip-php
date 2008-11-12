@@ -9,8 +9,9 @@ class Services_Gnip_Activity
 	public $tags;
 	public $to;
 	public $url;
+	public $payload;
 
-    function __construct($at, $action, $actor, $regarding, $source, $tags, $to, $url)
+    function __construct($at, $action, $actor, $regarding, $source, $tags, $to, $url, $payload = null)
     {
         $this->at = is_string($at) ? new DateTime($at) : $at;
         $this->action = trim($action);
@@ -20,6 +21,7 @@ class Services_Gnip_Activity
 		$this->tags = is_string($tags) ? split(',', $tags) : $tags;
 		$this->to = trim($to);
 		$this->url = trim($url);
+		$this->payload = $payload;
     }
     
     function toXML()
@@ -34,12 +36,26 @@ class Services_Gnip_Activity
 		$xml->addOptionalAttribute('to', $this->to);
 		$xml->addOptionalAttribute('url', $this->url);
 
+		if($this->payload != null)
+		{
+		    $payloadChild = $xml->addChild('payload');
+		    $payloadChild->addChild('body', $this->payload->body);
+		    if($this->payload->raw != null)
+		        $payloadChild->addChild('raw', $this->payload->raw);
+		}
         return trim($xml->asXML());
     }
     
     static function fromXML($xml)
     {
-        return new Services_Gnip_Activity(new DateTime($xml['at']), $xml['action'], $xml['actor'], $xml['regarding'], $xml['source'], strval($xml['tags']), $xml['to'], $xml['url']);
+
+        if($xml->payload != null && $xml->payload->body != "")        
+            $found_payload = Services_Gnip_Payload::fromXML($xml->payload);
+        else
+            $found_payload = null;
+
+        return new Services_Gnip_Activity(new DateTime($xml['at']), $xml['action'], $xml['actor'], $xml['regarding'], $xml['source'], strval($xml['tags']), $xml['to'], $xml['url'],
+            $found_payload);
     }
 }
 ?>
