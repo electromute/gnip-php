@@ -37,7 +37,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         assertContains($activity, $activities);
     }
 
-    public function testGetActivitiesWithPayload()
+    public function _testGetActivitiesWithPayload()
     {
         $this->assertEquals($this->gnip->getPublisher("gniptest"), $this->publisher);
 
@@ -48,8 +48,11 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         $this->gnip->publish($this->publisher, array($activity));
 
         $activities = $this->gnip->getPublisherActivities($this->publisher);
-        
+
         assertContains($activity, $activities);
+        echo "decoded raw=[".$payload->decodedRaw()."]";
+        echo "decoded raw=[".$activities[1]->payload->decodedRaw()."]";
+        $this->assertEquals($activity->payload->decodedRaw, $activities[1]->payload->decodedRaw);
     }
 }
 ?>

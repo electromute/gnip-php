@@ -8,13 +8,13 @@ class Services_Gnip_Payload
     {
         $this->body = $body;
         if($raw != null)
-            $this->raw = base64_encode(gzcompress($raw));
+            $this->raw = base64_encode(gzencode($raw));
     }
 
     public function decodedRaw()
     {
         if($this->raw != null)
-            return gzuncompress(base64_decode($this->raw));
+            return gzinflate(base64_decode($this->raw));
         return $this->raw;
     }
 
@@ -30,7 +30,7 @@ class Services_Gnip_Payload
     public static function fromXML($xml)
     {
         if($xml->raw != null && $xml->raw != "")
-            $found_raw = gzuncompress(base64_decode(strval($xml->raw)));
+            $found_raw = gzinflate(base64_decode(strval($xml->raw)));
         else
             $found_raw = null;
         
