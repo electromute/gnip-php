@@ -22,34 +22,19 @@ class PayloadTest extends PHPUnit_Framework_TestCase
         $this->assertNull($payload->decodedRaw());
     }
 
-    function testToXmlWithoutRaw()
+    function testToXml()
     {
 		$expected_xml = "<payload><body>body</body></payload>";
         $payload = new Services_Gnip_Payload("body");
         $this->assertEquals($expected_xml, $payload->toXML());
     }
 
-    function _testToXmlWithRaw()
-    {
-		$expected_xml = "<payload><body>body</body><raw>eJwrSiwHAAKSAUs=</raw></payload>";
-        $payload = new Services_Gnip_Payload("body", "raw");
-        $this->assertEquals($expected_xml, $payload->toXML());
-    }
-
-	function testFromXmlWithoutRaw()
+	function testFromXml()
     {
 		$xml = "<payload><body>body</body></payload>";
 		$payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
         $this->assertEquals("body", $payload->body);
         $this->assertNull($payload->raw);        
-    }
-
-	function _testFromXmlWithRaw()
-    {
-		$xml = "<payload><body>body</body><raw>eJwrSiwHAAKSAUs=</raw></payload>";
-		$payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
-        $this->assertEquals("body", $payload->body);
-        $this->assertEquals("raw", $payload->decodedRaw());       
-    }
+    }	
 }
 ?>
