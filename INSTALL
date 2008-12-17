@@ -8,7 +8,7 @@ install php5 w/ pear
 install phpunit 3.2.*
 
 	> sudo pear channel-discover pear.phpunit.de
-	> sudo pear install phpunit/PHPUnit-3.2.21
+	> sudo pear install phpunit/PHPUnit-3.3.5
 	
 install phing 2.3.*
 	

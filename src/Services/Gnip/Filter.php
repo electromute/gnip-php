@@ -33,7 +33,7 @@ class Services_Gnip_Filter
      * 
      * Adds one or more rules to a Services_Gnip_Filter object.
      */
-	public function addRule($rules){
+	public function addRules($rules){
 		foreach ((array) $rules as $rule){
 			$this->rules[] = $rule;
 		}
@@ -44,10 +44,10 @@ class Services_Gnip_Filter
      * Remove Rules.
      * 
 	 * @param array $rules
-     * 
+     *
      * Removes one or more rules from a Services_Gnip_Filter object.
      */
-	public function removeRule($rules){
+	public function removeRules($rules){
 		foreach ((array) $rules as $rule){
 			$key = array_search($rule, $this->rules);
 			unset($this->rules[$key]);

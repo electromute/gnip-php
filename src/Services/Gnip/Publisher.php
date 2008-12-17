@@ -109,5 +109,34 @@ class Services_Gnip_Publisher
     {
         return "/publishers.xml";
     }
+
+	/**
+     * Add Rule Types.
+     *
+	 * @param array $ruleTypes
+     *
+     * Add one or more ruleTypes from a Services_Gnip_Publisher object.
+     */
+    public function addRuleTypes($ruleTypes)
+    {
+        foreach ((array) $ruleTypes as $ruleType){
+			$this->supported_rule_types[] = $ruleType;
+		}
+    }
+
+	/**
+     * Remove Rule Types.
+     *
+	 * @param array $ruleTypes
+     *
+     * Removes one or more ruleTypes from a Services_Gnip_Publisher object.
+     */
+    public function removeRuleTypes($ruleTypes)
+    {
+        foreach ((array) $ruleTypes as $ruleType){
+			$key = array_search($ruleType, $this->supported_rule_types);
+			unset($this->supported_rule_types[$key]);
+		}
+    }
 }
 ?>

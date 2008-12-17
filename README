@@ -102,6 +102,13 @@ Unit tests can be run by using the command:
 
 phpunit test/unit/ActivityTest.php
 
+or
+
+You can run the entire test suite at once by running the following command
+from the root of this directory:
+
+phing
+
 
 ==== Subscriber Actions ====
 
@@ -179,8 +186,8 @@ gnip-test-publisher.
 			new Services_Gnip_Rule("actor", "me"), 
 			new Services_Gnip_Rule("actor", "mary"));
 	$filter = new Services_Gnip_Filter("myNotificationFilter", 'false', '', $rules);
-	$filter->addRule(array(new Services_Gnip_Rule("actor", "joeblow")));
-	$filter->removeRule(array(new Services_Gnip_Rule("actor", "me")));
+	$filter->addRules(array(new Services_Gnip_Rule("actor", "joeblow")));
+	$filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
 	$gnip->createFilter("gnip-test-publisher", $filter);
 	print_r($gnip->getFilterNotifications("gnip-test-publisher", $filter));
@@ -217,8 +224,8 @@ url is invalid).
 				new Services_Gnip_Rule("actor", "me"), 
 				new Services_Gnip_Rule("actor", "mary"));
 	$filter = new Services_Gnip_Filter("myActivityFilter", 'true', 'http://mysite.com/processingscript.php', $rules);
-	$filter->addRule(array(new Services_Gnip_Rule("actor", "joeblow")));
-	$filter->removeRule(array(new Services_Gnip_Rule("actor", "me")));
+	$filter->addRules(array(new Services_Gnip_Rule("actor", "joeblow")));
+	$filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
 	$gnip->createFilter("gnip-test-publisher", $filter);
 	print_r($gnip->getFilterActivities("gnip-test-publisher", $filter));
@@ -242,7 +249,7 @@ two new rules to the filter we created above, myNotificationFilter:
 	$gnip = new Services_Gnip("<your account email>", "<your account password>");
 
 	$filter = $gnip->getFilter("gnip-test-publisher", "myNotificationFilter");
-	$filter->addRule(array(new Services_Gnip_Rule("actor", "sam"),
+	$filter->addRules(array(new Services_Gnip_Rule("actor", "sam"),
 					new Services_Gnip_Rule("actor", "judy")));
 	$gnip->updateFilter("gnip-test-publisher", $filter);
 	
@@ -329,11 +336,11 @@ of supported rule types.
 	
 	$gnip = new Services_Gnip("<your account email>", "<your account password>");
 	
-	$name = "myPublisher";
-	$supported_rule_types = array("tag");
-	$publisher = new Services_Gnip_Publisher($name, $supported_rule_types);
+    $pub = $gnip->getPublisher($this->publisher->name);
 
-	echo $gnip->updatePublisher($publisher);
+    $rule_types = array(new Services_Gnip_Rule_Type('to'));
+    $pub->addRuleTypes($rule_types);
+    echo $gnip->updatePublisher($pub);	
 	
 	You should see a status message of "Success".
 

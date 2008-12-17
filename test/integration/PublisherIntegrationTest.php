@@ -7,8 +7,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
     {
         $this->gnip = new Services_Gnip("", "");
 
-        $rule_types = array(new Services_Gnip_Rule_Type(''),
-			new Services_Gnip_Rule_Type(''));
+        $rule_types = array(new Services_Gnip_Rule_Type('actor'));
         $this->publisher = new Services_Gnip_Publisher("", $rule_types);
     }
 
@@ -28,7 +27,28 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($pub, $this->publisher);
     }
 
-	public function testGetNotifications()
+    public function testUpdatePublisher()
+    {
+        $pub = $this->gnip->getPublisher($this->publisher->name);
+        $this->assertEquals($pub, $this->publisher);        
+
+        $rule_types = array(new Services_Gnip_Rule_Type('to'));
+        $pub->addRuleTypes($rule_types);
+        $this->gnip->updatePublisher($pub);
+
+        $modified_pub = $this->gnip->getPublisher($pub->name);
+        $this->assertEquals($modified_pub->name, $this->publisher->name);
+        $this->assertEquals(2, count($modified_pub->supported_rule_types));     
+
+        $modified_pub->removeRuleTypes($rule_types);
+        $this->gnip->updatePublisher($modified_pub);
+
+        $original_publisher = $this->gnip->getPublisher($modified_pub->name);
+        $this->assertEquals($original_publisher->name, $this->publisher->name);
+        $this->assertEquals(1, count($this->publisher->supported_rule_types));
+    }
+
+	public function xtestGetNotifications()
     {
 		$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
 
@@ -41,7 +61,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         assertContains($activity, $activities);
     }
 
-    public function testGetActivitiesWithPayload()
+    public function xtestGetActivitiesWithPayload()
     {
 		$pub = $this->gnip->getPublisher($this->publisher->name);
         $this->assertEquals($pub, $this->publisher);
