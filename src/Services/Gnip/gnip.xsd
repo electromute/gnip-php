@@ -2,12 +2,48 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+    <xs:element name="droneActivities">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="activity" maxOccurs="unbounded" minOccurs="0"/>
+                <xs:element ref="pollResult" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="publisher" type="uriSafeType" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="job">
+        <xs:complexType>
+            <xs:attribute name="pollUrl" type="uriSafeType" use="required"/>
+            <xs:attribute name="lastServerDate" type="xs:string" use="required"/>
+            <xs:attribute name="lastEtag" type="xs:string" use="required"/>
+            <xs:attribute name="postUrl" type="xs:string" use="required"/>
+
+            <xs:attribute name="ruleType" type="xs:string" use="required"/>
+            <xs:attribute name="ruleValue" type="xs:string" use="required"/>
+            <xs:attribute name="publisher" type="xs:string" use="required"/>
+            <xs:attribute name="format" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pollResult">
+        <xs:complexType>
+
+            <xs:attribute name="returnCode" type="xs:string" use="required"/>
+            <xs:attribute name="etag" type="xs:string" use="required"/>
+            <xs:attribute name="date" type="xs:string" use="required"/>
+            <xs:attribute name="ruleType" type="xs:string" use="required"/>
+            <xs:attribute name="ruleValue" type="xs:string" use="required"/>
+            <xs:attribute name="format" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
     <!-- Root element of representations a set of activities. -->
     <xs:element name="activities">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="activity" maxOccurs="unbounded" minOccurs="0"/>
-                <xs:element ref="pollResults" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="publisher" type="uriSafeType" use="optional"/>
         </xs:complexType>
@@ -21,6 +57,7 @@
                     <xs:element name="postUrl" type="xs:anyURI"/>
                     <xs:element name="jid" type="xs:string"/>
                 </xs:choice>
+
                 <xs:element ref="rule" maxOccurs="unbounded" minOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="name" type="uriSafeType" use="required"/>
@@ -28,8 +65,19 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Root element of representations of a set of polled publishers. -->
+    <xs:element name="polledpublishers">
+
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="polledpublisher" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- Root element of representations of a set of publishers. -->
     <xs:element name="publishers">
+
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="publisher" maxOccurs="unbounded" minOccurs="0"/>
@@ -39,9 +87,20 @@
 
     <!-- Root element of representations of a set of filters. -->
     <xs:element name="filters">
+
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="filter" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Root element of representations of a set of rules. -->
+    <xs:element name="rules">
+
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="rule" maxOccurs="unbounded" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -51,12 +110,18 @@
     this element -->
     <xs:element name="error" type="xs:string"/>
 
+    <!-- Root element of Result responses from Gnip.  A human readable
+    description of the result will be in the text node contained by
+    this element -->
+    <xs:element name="result" type="xs:string"/>
+
     <!-- Root element of activityStream representations -->
     <xs:element name="activityStream">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="activitiesAddedAt" type="optionalTimeStampType"/>
                 <xs:element name="buckets">
+
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="bucket" minOccurs="0" maxOccurs="unbounded">
@@ -66,13 +131,56 @@
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>
+
                 </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="subscription">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="1">
+
+                    <xs:element name="postUrl" type="xs:anyURI"/>
+                    <xs:element name="jid" type="xs:string"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="notification|activity"/>
+                    </xs:restriction>
+
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="user">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+
+                <xs:element name="password" type="xs:string"/>
+                <xs:element name="fullname" type="xs:string"/>
+                <xs:element name="company" type="xs:string"/>
+                <xs:element name="website" type="xs:string"/>
+                <xs:element name="role" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="users">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="user" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <xs:simpleType name="optionalTimeStampType">
+
         <xs:union memberTypes="xs:dateTime">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
@@ -91,6 +199,7 @@
                             <xs:element name="body" type="xs:normalizedString"/>
                             <xs:element name="raw" type="xs:base64Binary" minOccurs="0" maxOccurs="1"/>
                         </xs:sequence>
+
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -100,24 +209,53 @@
             <xs:attribute name="url" type="xs:anyURI" use="optional"/>
             <xs:attribute name="to" type="xs:string" use="optional"/>
             <xs:attribute name="regarding" type="xs:string" use="optional"/>
+
             <xs:attribute name="source" type="xs:string" use="optional"/>
             <xs:attribute name="tags" type="csvType" use="optional"/>
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="pollResults">
+    <xs:element name="publisher">
         <xs:complexType>
-            <xs:attribute name="returnCode" type="xs:string" use="required"/>
-            <xs:attribute name="etag" type="xs:string" use="required"/>
-            <xs:attribute name="date" type="xs:string" use="required"/>
-            <xs:attribute name="username" type="xs:string" use="required"/>
-            <xs:attribute name="format" type="xs:string" use="required"/>
+            <xs:sequence>
+                <xs:element name="supportedRuleTypes" minOccurs="1" maxOccurs="1">
+
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="type" type="ruleType" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="uriSafeType" use="required"/>
+        </xs:complexType>
+
+    </xs:element>
+
+    <xs:element name="polledpublisher">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="pollingInfo" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="uriSafeType" use="required"/>
+            <xs:attribute name="queen" type="uriSafeType" use="required"/>
+
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="publisher">
+    <xs:element name="pollingInfo">
         <xs:complexType>
-            <xs:attribute name="name" type="uriSafeType" use="required"/>
+            <xs:sequence>
+                <xs:element name="endpoint" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="mapping" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+
+            <xs:attribute name="format" type="xs:string" use="required"/>
+            <xs:attribute name="ruleType" type="ruleType" use="required"/>
+            <xs:attribute name="defaultPollInterval" type="xs:integer" use="required"/>
+            <xs:attribute name="minPollInterval" type="xs:integer" use="required"/>
+            <xs:attribute name="maxPollInterval" type="xs:integer" use="required"/>
+            <xs:attribute name="pollBackoff" type="xs:integer" use="required"/>
         </xs:complexType>
     </xs:element>
 
@@ -128,9 +266,9 @@
         </xs:complexType>
     </xs:element>
 
-
     <xs:simpleType name="uriSafeType">
         <xs:restriction base="xs:string">
+
             <xs:pattern value="[A-z0-9.+\-]+"/>
         </xs:restriction>
     </xs:simpleType>
@@ -149,5 +287,6 @@
             <xs:enumeration value="regarding"/>
             <xs:enumeration value="source"/>
         </xs:restriction>
+
     </xs:simpleType>
 </xs:schema>

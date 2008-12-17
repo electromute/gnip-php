@@ -11,6 +11,24 @@ class Services_Gnip_Activity
 	public $url;
 	public $payload;
 
+
+	/**
+     * Constructor.
+     * 
+     * @param string or DateTime $at
+	 * @param string $action
+	 * @param string $actor
+	 * @param string $regarding
+	 * @param string $source
+	 * @param string $tags
+	 * @param string $to
+	 * @param string $url
+	 * @param object $payload optional Services_Gnip_Payload 
+     * 
+     * Creates a Services_Gnip_Activity object. Tags should be a comma-delimited string
+	 * of items. The payload object is optional.
+	 * 
+     */
     function __construct($at, $action, $actor, $regarding, $source, $tags, $to, $url, $payload = null)
     {
         $this->at = is_string($at) ? new DateTime($at) : $at;
@@ -24,6 +42,14 @@ class Services_Gnip_Activity
 		$this->payload = $payload;
     }
     
+
+	/**
+     * To XML.
+     * 
+     * @return XML formatted activity data
+	 *
+     * Converts the activity to properly formatted XML.
+     */
     function toXML()
     { 
         $xml = new GnipSimpleXMLElement("<activity/>");
@@ -46,6 +72,15 @@ class Services_Gnip_Activity
         return trim($xml->asXML());
     }
     
+
+	/**
+     * From XML.
+     * 
+	 * @param $xml SimpleXMLElelement XML data
+     * @return object Services_Gnip_Rule
+	 *
+     * Converts XML formatted rule to Services_Gnip_Activity object.
+     */
     static function fromXML($xml)
     {
 

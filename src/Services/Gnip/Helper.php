@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This class provides basic functionality help for all Gnip classes.
  */
@@ -9,6 +8,16 @@ class Services_Gnip_Helper
     private $password;
     private $base_url;
 
+
+	/**
+     * Constructor.
+     * 
+     * @param string $username
+	 * @param string $password
+	 * @param string $base_url
+     * 
+     * Creates a Services_Gnip_Helper object.
+     */
     function __construct($username, $password, $base_url)
     {
         $this->username = $username;
@@ -16,11 +25,30 @@ class Services_Gnip_Helper
         $this->base_url = $base_url;
     }
 
+
+	/**
+     * HTTP Get.
+     * 
+	 * @param string $url
+     * @return string status of request
+	 *
+     * Performs an HTTP GET request to a given URL.
+     */
     function doHttpGet($url)
     {
         return $this->doRequest($this->base_url.$url);
     }
 
+
+	/**
+     * HTTP Post.
+     * 
+	 * @param string $url
+	 * @param string $data xml formatted data
+     * @return string status of request
+	 *
+     * Performs an HTTP POST request to a given URL.
+     */
     function doHttpPost($url, $data)
     {
         $this->validate($data);
@@ -31,6 +59,16 @@ class Services_Gnip_Helper
         );
     }
 
+
+	/**
+     * HTTP Put.
+     * 
+	 * @param string $url
+	 * @param string $data xml formatted data
+     * @return string status of request
+	 *
+     * Performs an HTTP PUT request to a given URL.
+     */
     function doHttpPut($url, $data)
     {
         $this->validate($data);
@@ -45,24 +83,41 @@ class Services_Gnip_Helper
         );
     }
 
+
+	/**
+     * HTTP Delete.
+     * 
+	 * @param string $url
+     * @return string status of request
+	 *
+     * Performs an HTTP DELETE request for a given URL.
+     */
     function doHttpDelete($url)
     {
         return $this->doRequest($this->base_url.$url, array(CURLOPT_CUSTOMREQUEST => "DELETE"));
     }
     
+
+	/**
+     * Validate.
+     * 
+	 * @param string $xml
+     * @return string xml you passed in
+	 *
+     * Validates the xml data against Gnip schema. 
+     */
     private function validate($xml) 
     {
         $doc = new DOMDocument();
-        $doc->loadXML($xml);
+        $doc->loadXML($xml); 
         $doc->schemaValidate(dirname(__FILE__) . '/gnip.xsd'); 
         return $xml;
     }
 
     /**
-     * Adjust a time so that it corresponds with Gnip time
+     * Adjust a time so that it corresponds with Gnip time.
      *
-     * @type theTime long
-     * @param theTime The time to adjust
+     * @param long $theTime time to adjust
      * @return long containing the corrected time
      *
      * This method gets the current time from the Gnip server,
@@ -103,8 +158,7 @@ class Services_Gnip_Helper
     /**
      * Convert the time to a valid bucket.
      *
-     * @type theTime long
-     * @param theTime The time to convert to a string
+     * @param long $theTime time to convert to a string
      * @return string representing time
      *
      * Converts the time passed in to a string of the
@@ -114,7 +168,18 @@ class Services_Gnip_Helper
     {
         return gmdate("YmdHi", $time);
     }
-    
+
+
+	/**
+     * Do a CURL request.
+     * 
+	 * @param string $url
+	 * @param array $curl_options
+	 * @param boolean $isGzipEncoded default is false
+     * @return string response
+	 *
+     * Performs a CURL operation based on the array of curl_options sent.
+     */
     function doRequest($url, $curl_options = array(), $isGzipEncoded = false)
     {
         $curl = curl_init();

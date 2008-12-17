@@ -1,78 +1,355 @@
-= Gnip PHP API Client
+Welcome to the Gnip PHP convenience library!
 
-This library provides a PHP API for accessing
-Gnip web services.  There are two basic
-roles for using Gnip: subscribers and publishers.  This library
-provides a single API for both roles.
+== Overview ==
 
-== Consumer
+This library provides a PHP API for accessing Gnip web services.  This library 
+supports activities related to publishing and subscribing to data.
 
-=== Example 1: Retrieve all recent activities at a publisher
+== Dependencies == 
+Dependencies can be installed via command line or by running the install script.
 
-As a consumer one thing you might be interested in immediately is to
-grab recent activity at a particular publisher.  To do this you must
-create a connection to Gnip using your user name and password.  Once
-that connection is established you can get the publisher and request
-its activities stream.
+= Required Dependencies =
+  - php5 with SimpleXML (included by default in PHP5, unless disabled)
+  - A user account on Gnip http://gnipcentral.com/
+
+= Optional Dependencies =
+  - PEAR
+  - MacPorts
+
+= Test Dependencies =
+  - PHPUnit 
+  - Phing 
+
+Resource links for the above dependencies can be found here:
+http://www.php.net/manual/en/book.simplexml.php
+http://pear.php.net/
+http://www.phpunit.de/
+http://phing.info
+http://www.macports.org/
 
 
-	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
-	$activities = $gnip->getPublisherActivities("digg");
+== Quick Start ==
+If you do not wish to install the optional dependencies, you can get Gnip up 
+and running fairly quickly.
 
-=== Example 2: Retrieve all activities at a publisher around a specific time
+Gnip has a test publisher "gnip-test-publisher":
+https://prod.gnipcentral.com/publishers/gnip-test-publisher/notification/
 
-Some times you will want to get activity information from before now.
-Doing this look much like getting the recent activity, except that you
-past a time when getting the activity stream.  This will return the
-activity stream as it existed around that time.  The results will be
-include some activities before and after the time you specify.
+The following example retrieves notification data from the current bucket for 
+gnip-test-publisher. Please note that the current bucket is not static and 
+therefore will contain a variable amount of data, but you'll get quick feedback 
+to know if you can connect and access the public notification data.
 
-	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
-	$activities = $gnip->getPublisherActivities("digg", time());
+	<?
+	require_once 'src/Services/Gnip.php';
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$pub = new Services_Gnip_Publisher("gnip-test-publisher");
+	$notifications = $gnip->getPublisherNotifications($pub);
+	print_r($notifications);
+	?>
+	
+You should see an array of objects printed to your browser.
 
-=== Example 3: Create an activity stream that includes only activities
-    done by users you care about.
+== Installing ==
 
-If you would like to filter a set of publishers by the user that
-performed the activity you may create a filter to do so.  Once
-created a filter's activity stream is retrieved much like a
-publisher's.  Activity that has already occured will not be included in
-a filter.  Therefore any new filter will be empty until some
-new matching activity has occured.
+= OSX and Ubuntu = 
+If you have MacPorts set up on the mac and are running the factory-installed 
+apache or Ubuntu, you can run the INSTALL script included. It will install 
+all of the dependencies.
 
-	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
+Otherwise, assuming you have PHP and PEAR ready to go, you can install the 
+optional dependencies as follows:
 
-	$rules = array(new Services_Gnip_Rule("actor", "me"), 
-		new Services_Gnip_Rule("actor", "you"), 
-		new Services_Gnip_Rule("actor", "bob"));
-	$filter = new Services_Gnip_Filter("myFilter", 'false', '', '', $rules);
-	myFilter.Rules.Add(new Rule("actor", "me"));
+Make sure PEAR is upgraded to the latest version:
+% sudo pear channel-update pear.php.net
 
-	$gnip->createFilter("digg", $filter);
-	$gnip->getFilterActivities("digg", $filter);
+= Install phpunit 3.3.* =
 
-=== Example 4: Delete a filter
+% sudo pear channel-discover pear.phpunit.de
+% sudo pear install phpunit/PHPUnit-3.3.5
+	
+= Install phing 2.3.* =
 
-If you decide you no longer need a filter you have created in the
-past you can remove it.
+% sudo pear channel-discover pear.phing.info
+% sudo pear install phing/phing
 
-	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
+= Tips =
+Make sure the memory_limit is high enough in your php.ini. The PEAR installers 
+sometimes need 18M.
 
-	$gnip->deleteFilter("digg", $filter);
+= Debugging =
+The Gnip PHP library uses the PHP Logger to send messages to the logs. You can 
+configure the messages to be sent to the console by setting debugging:
 
-== Publisher
+$gnip = new Services_Gnip("<your account email>", "<your account password>");
+$gnip->setDebugging(true);
 
-=== Example 1: Create a publisher and publish some activities
+= Unit Tests Tips =
+PHPUnit tests are set up for these libraries. There are unit tests and 
+integration tests. 
 
-If you are interested in publishing activity you will need to create a
-publisher.  Once the publisher resource is created, activities can be
-published in it's activity stream.
+PublisherIntegrationTest.php is for publishers only and you must set up the correct
+information in the setup section of the test file.
 
-	$gnip = new Services_Gnip("me@mydomain.com", "my-password");
+FilterIntegrationTest.php can be run by anyone, but you must set up the correct
+information in the setup section of the test file.
+
+Integration tests can be run by using the command:
+
+phpunit test/integration/FilterIntegrationTest.php
+
+Unit tests can be run by using the command:
+
+phpunit test/unit/ActivityTest.php
+
+
+==== Subscriber Actions ====
+
+=== Notification vs. Activity ===
+
+As a subscriber you can retrieve notification data or activity data. The main 
+difference between these two types of data buckets are:
+
+*** Notifications contain a reduced meta-data subset of attributes for an 
+    activity
+*** Activities contain full data, including the raw payload. There are some 
+    restrictions on activity data. You can only request unfiltered activities 
+	on publishers that you own (have authorization access to). You can create 
+	filters on any publisher and request activity data.
+
+
+=== Example 1: Retrieve notifications from a publisher ===
+
+As a consumer one thing you might be interested in immediately is
+grabbing data from a publisher. To do this you must create a connection to Gnip 
+using your username and password.  Once the connection is established you can 
+get the publisher and request the stream. These examples uses the publisher 
+"gnip-test-publisher".
+
+*** Notification data stream request ***
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$pub = new Services_Gnip_Publisher("gnip-test-publisher");
+	$notifications = $gnip->getPublisherNotifications($pub);
+	print_r($notifications);
+
+You can also view the current notifications bucket via web on the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/notification/current.xml
+	
+	
+*** Notification data stream request with optional date param ***
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$pub = new Services_Gnip_Publisher("gnip-test-publisher");
+	$notifications = $gnip->getPublisherNotifications($pub, time() -120);
+	print_r($notifications);
+
+You can see the running list of notification buckets on the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/notification/
+	
+	
+=== Example 2: Filter notifications or activities by a set of users ===
+
+You can create a filter to stream activity data for the users you care about. 
+Posts from the users that have already occurred will not be included in a 
+filter. Therefore any new filter you create will be empty until the users you 
+specify perform an action (make a tweet, digg a story, create a bookmark in 
+delicious, etc.). 
+
+You can only retrieve activity data (full data) from publishers that you don't own 
+by creating a filter.
+
+The test actor for "gnip-test-publisher" is "joeblow". To test your filter, be sure 
+"joeblow"appears in your rule set.
+
+The following examples illustrate creating filters for both notification and activity 
+data. Additionally, the two examples show how to use/not use the post URL parameter.
+
+*** Notificiation Filter without POST URL ***
+
+Note that the full data (second parameter) of the filter object must be set to 
+false. This example does not include a POST Url, meaning you'll have to poll 
+Gnip for the results when you need them. The following snippet creates (and 
+retrieves) a notification filter called "myNotificationFilter" on the publisher 
+gnip-test-publisher.
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+
+	$rules = array(new Services_Gnip_Rule("actor", "you"),  
+			new Services_Gnip_Rule("actor", "me"), 
+			new Services_Gnip_Rule("actor", "mary"));
+	$filter = new Services_Gnip_Filter("myNotificationFilter", 'false', '', $rules);
+	$filter->addRule(array(new Services_Gnip_Rule("actor", "joeblow")));
+	$filter->removeRule(array(new Services_Gnip_Rule("actor", "me")));
+
+	$gnip->createFilter("gnip-test-publisher", $filter);
+	print_r($gnip->getFilterNotifications("gnip-test-publisher", $filter));
+	
+You can view your filters by running:
+	print_r($gnip->getFilter("gnip-test-publisher", "myNotificationFilter"));
+
+Your actors list should be (not necessarily in this order): you, mary, joeblow
+
+You can also see your filters list for each publisher by going to the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/filters
+	
+You can view notification buckets on the Gnip site by going to:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/filters/myNotificationFilter/notification
+	
+	
+	
+*** Activity Filter with POST URL ***
+
+Note that the full data (second parameter) of the filter object must be set to 
+true to view activity data. This example includes the optional POST Url, 
+meaning Gnip will POST via an HTTP HEAD request to this URL. The following 
+snippet creates (and gets) a notification filter called "myActivityFilter" on 
+the publisher gnip-test-publisher. 
+
+If you want notifications to be sent to a script on your server for processing, 
+you must ensure that the postUrl parameter you set responds successfully to an 
+HTTP HEAD request. (note that this example will throw an error because the POST 
+url is invalid).
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+
+	$rules = array(new Services_Gnip_Rule("actor", "you"),  
+				new Services_Gnip_Rule("actor", "me"), 
+				new Services_Gnip_Rule("actor", "mary"));
+	$filter = new Services_Gnip_Filter("myActivityFilter", 'true', 'http://mysite.com/processingscript.php', $rules);
+	$filter->addRule(array(new Services_Gnip_Rule("actor", "joeblow")));
+	$filter->removeRule(array(new Services_Gnip_Rule("actor", "me")));
+
+	$gnip->createFilter("gnip-test-publisher", $filter);
+	print_r($gnip->getFilterActivities("gnip-test-publisher", $filter));
+	
+You can view your filters by running:
+	print_r($gnip->getFilter("gnip-test-publisher", "myActivityFilter"));
+
+You can see your filters by going to the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/filters
+Your actors list should be (not necessarily in this order): you, mary, joeblow
+
+Once data is available, you can see it here:
+	https://review.gnipcentral.com/publishers/gnip-test-publisher/activity
+	
+
+=== Example 3: Add rules to an existing filter ===
+
+You can add rules later to an existing filter. The following code snippet adds 
+two new rules to the filter we created above, myNotificationFilter:
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+
+	$filter = $gnip->getFilter("gnip-test-publisher", "myNotificationFilter");
+	$filter->addRule(array(new Services_Gnip_Rule("actor", "sam"),
+					new Services_Gnip_Rule("actor", "judy")));
+	$gnip->updateFilter("gnip-test-publisher", $filter);
+	
+	print_r($gnip->getFilter("gnip-test-publisher", "myNotificationFilter"));
+
+    You should see the following actors: mary, you, sam, joeblow, judy
+
+=== Example 4: Delete a filter ===
+
+Filters can be easily deleted. The following code sample deletes the filter 
+that was created above:
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$filter = $gnip->getFilter("gnip-test-publisher", "myNotificationFilter");
+	echo $gnip->deleteFilter("gnip-test-publisher", $filter);
+	
+	You should get a status message of "Success" send to your browser.
+	
+=== Example 5: Retrieve activities from a publisher ===
+
+*** Activity Data Stream Request ***
+
+NOTE: You must create a filter (see Example 2 above) before you can view 
+activities for a publisher that you do not own.
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$pub = new Services_Gnip_Publisher("gnip-test-publisher");
+	$activities = $gnip->getPublisherActivities($pub);
+
+You can also view the current activity bucket via web on the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/activity/current.xml
+
+
+*** Activity Data Stream Request with Date Param ***
+
+NOTE: You must create a filter (see Example 3 below) before you can view 
+activities for a publisher that you do not own.
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$pub = new Services_Gnip_Publisher("gnip-test-publisher");
+	$activities = $gnip->getPublisherActivities($pub, time() -120);
+
+You can see the running list of activity buckets on the Gnip site:
+	https://prod.gnipcentral.com/publishers/gnip-test-publisher/activity/
+
+
+
+
+
+==== Publisher Actions ====
+
+In order to utilize the publisher API, you must first create a publisher. The 
+publisher name should be descriptive to you, especially if you want it to be 
+publicly available. For instance, the publisher name for Digg is "digg". For 
+now, publishers cannot be deleted once they are created, so be mindful when 
+naming and testing your publishers.
+
+Publishers must have one or more rule types specified so that filters can be 
+created based on the rule types. The following rule types are supported by 
+Gnip:
+	Actor 
+	To
+	Regarding
+	Source
+	Tag
+	
+=== Example 1: Create a publisher
+	
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	
+	$name = "myPublisher";
+	$supported_rule_types = array(new Services_Gnip_Rule_Type('actor'),
+							new Services_Gnip_Rule_Type('tag'));
+	$publisher = new Services_Gnip_Publisher($name, $supported_rule_types);
+
+	echo $gnip->createPublisher($publisher);
+	
+	You should see a status message of "Success".
+
+=== Example 2: Updating a publisher
+
+The following example takes an existing publisher and updates it with a new set 
+of supported rule types.
+	
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	
+	$name = "myPublisher";
+	$supported_rule_types = array("tag");
+	$publisher = new Services_Gnip_Publisher($name, $supported_rule_types);
+
+	echo $gnip->updatePublisher($publisher);
+	
+	You should see a status message of "Success".
+
+=== Example 3: Publishing activities
+
+Here is how you can publish activities to the activity stream:
+
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
 	
 	$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 
 		'upload', 'sally', 'blog_post', 'web', 
-		'trains,planes,automobiles', 'bob', 'http://example.com');
+		'trains,planes,automobiles', 'bob', 'http://example.com');	
+   	$mypub = $gnip->getPublisher("exampletest");
+	echo $gnip->publish($mypub, array($activity));
+	
+	You should see a status message of "Success".
 
-        $gnip->publish("digg", array($activity));
+
 

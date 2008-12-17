@@ -7,21 +7,25 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
     {
         $this->gnip = new Services_Gnip("", "");
 
-        $rule_types = array();
-        $rule_types[0] = new Services_Gnip_Rule_Type('actor');
-
+        $rule_types = array(new Services_Gnip_Rule_Type(''),
+			new Services_Gnip_Rule_Type(''));
         $this->publisher = new Services_Gnip_Publisher("", $rule_types);
     }
 
     public function testGetPublishers()
     {
         $publishers = $this->gnip->getPublishers();
-        assertContains($this->publisher, $publishers);
+		$names = array();
+		foreach ($publishers as $publisher){
+			$names[] = $publisher->name;
+		}
+        assertContains($this->publisher->name, $names);
     }
 
     public function testGetPublisher()
     {
-        $this->assertEquals($this->gnip->getPublisher(""), $this->publisher);
+		$pub = $this->gnip->getPublisher($this->publisher->name);
+        $this->assertEquals($pub, $this->publisher);
     }
 
 	public function testGetNotifications()
@@ -39,7 +43,8 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testGetActivitiesWithPayload()
     {
-        $this->assertEquals($this->gnip->getPublisher("gniptest"), $this->publisher);
+		$pub = $this->gnip->getPublisher($this->publisher->name);
+        $this->assertEquals($pub, $this->publisher);
 
         $payload = new Services_Gnip_Payload("body", "raw");
 
@@ -50,7 +55,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         $activities = $this->gnip->getPublisherActivities($this->publisher);
 
         assertContains($activity, $activities);
-        $this->assertEquals($activity->payload->decodedRaw, $activities[1]->payload->decodedRaw);
+        $this->assertEquals($activity->payload->decodedRaw(), $activities[1]->payload->decodedRaw());
     }
 }
 ?>
