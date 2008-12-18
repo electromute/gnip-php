@@ -48,7 +48,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($this->publisher->supported_rule_types));
     }
 
-	public function xtestGetNotifications()
+	public function testGetNotifications()
     {
 		$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
 
@@ -61,7 +61,7 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
         assertContains($activity, $activities);
     }
 
-    public function xtestGetActivitiesWithPayload()
+    public function testGetActivitiesWithPayload()
     {
 		$pub = $this->gnip->getPublisher($this->publisher->name);
         $this->assertEquals($pub, $this->publisher);
