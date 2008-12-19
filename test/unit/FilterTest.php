@@ -114,5 +114,38 @@ class FilterTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals("http://example.com", $f->postUrl);
 		$this->assertEquals($rules, $f->rules);	
     }
+
+ 	function testGetCreateUrl()
+    {
+		$pubRuleTypes = array();
+		$filterRules = array();
+        $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
+		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+		
+        $expected_url = "/publishers/" . $publisher->name . "/filters.xml";
+		$this->assertEquals($expected_url, $filter->getCreateUrl($publisher->name));
+    }
+
+	function testGetUrl()
+    {
+		$pubRuleTypes = array();
+		$filterRules = array();
+        $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
+		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+		
+        $expected_url = "/publishers/" . $publisher->name ."/filters/" . $filter->name;
+		$this->assertEquals($expected_url, $filter->getUrl($publisher->name));
+    }
+
+	function testGetIndexUrl()
+    {
+		$pubRuleTypes = array();
+		$filterRules = array();
+        $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
+		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+		
+        $expected_url = "/publishers/" . $publisher->name ."/filters.xml";
+		$this->assertEquals($expected_url, $filter->getIndexUrl($publisher->name));
+    }
 }
 ?>

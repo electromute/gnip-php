@@ -5,8 +5,10 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
 {
     public function setUp() 
     {
+		//edit the following with your relevant data
         $this->gnip = new Services_Gnip("", "");
 		$this->publisher = "";
+		//end editable section
 
 		$rules = array(new Services_Gnip_Rule("actor", "me"), 
 			new Services_Gnip_Rule("actor", "you"), 

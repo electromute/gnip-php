@@ -47,6 +47,14 @@ class GnipTest extends PHPUnit_Framework_TestCase
         $this->gnip->helper = $this->helper = new MockHelper();
     }
 
+	function testDebugging(){
+		$this->gnip->setDebugging(true);
+		$this->assertEquals(true, $this->gnip->debug);
+		
+		$this->gnip->setDebugging(false);
+		$this->assertEquals(false, $this->gnip->debug);
+	}
+
     function testGetPublishers()
     {
         $this->helper->expect('get', '/publishers.xml', 
@@ -96,6 +104,18 @@ class GnipTest extends PHPUnit_Framework_TestCase
                               
         $this->gnip->createFilter("digg", $f);
     }
+
+	function testGetFilter()
+	{
+		$this->helper->expect('get', '/publishers/digg/filters/test.xml');
+		$this->gnip->getFilter('digg', 'test');		
+	}
+	
+	function testRuleExists() {
+		$rule = new Services_Gnip_Rule("actor", "me");
+		$this->helper->expect('get', '/publishers/digg/filters/test/rules.xml');
+		$this->gnip->ruleExists('digg', 'test', $rule);
+	}
 
     function testDeleteFilter()
     {

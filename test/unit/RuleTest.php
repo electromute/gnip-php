@@ -20,4 +20,28 @@ class RuleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("actor", $rule->type);
 		$this->assertEquals("testActor", $rule->value);
     }
+
+ 	function testGetCreateUrl()
+    {
+		$pubRuleTypes = array();
+		$filterRules = array();
+        $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
+		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+		$rule = new Services_Gnip_Rule("actor", "you");
+		
+		$expected_url = "/publishers/" . $publisher->name . "/filters/" . $filter->name . "/rules.xml";
+		$this->assertEquals($expected_url, $rule->getCreateUrl($publisher->name, $filter->name));
+    }
+
+   	function testGetUrl()
+    {
+		$pubRuleTypes = array();
+		$filterRules = array();
+        $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
+		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+		$rule = new Services_Gnip_Rule("actor", "you");
+		
+        $expected_url = "/publishers/" . $publisher->name ."/filters/" . $filter->name ."/rules";
+		$this->assertEquals($expected_url, $rule->getUrl($publisher->name, $filter->name));
+    }
 }

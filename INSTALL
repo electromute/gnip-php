@@ -5,7 +5,7 @@ install php5 w/ pear
 	* on ubuntu
 	  > sudo apt-get install php5 php-pear
 
-install phpunit 3.2.*
+install phpunit 3.3.*
 
 	> sudo pear channel-discover pear.phpunit.de
 	> sudo pear install phpunit/PHPUnit-3.3.5

@@ -48,5 +48,37 @@ class Services_Gnip_Rule
     public static function fromXML(SimpleXMLElement $xml){
         return new Services_Gnip_Rule($xml["type"], $xml["value"]);
     }
+
+
+	/**
+     * Get create rule URL.
+     * 
+	 * @param string $publisher name of publisher
+	 * @param string $filter name of filter
+     * @return string URL
+	 *
+     * Returns the URL to send create rule request to belonging
+	 * to a given filter and publisher.
+     */
+    public function getCreateUrl($publisher, $filter)
+    {
+        return "/publishers/" . $publisher . "/filters/" . $filter . "/rules.xml";
+    }
+
+	/**
+     * Get rule URL.
+     * 
+	 * @param string $publisher name of publisher
+	 * @param string $filter name of filter
+     * @return string URL
+	 *
+     * Returns the URL of a given filter by name belonging to 
+	 * a given publisher.
+     */
+    public function getUrl($publisher, $filter)
+    {
+        return "/publishers/" . $publisher ."/filters/" . $filter ."/rules";
+    }
+
 }
 ?>

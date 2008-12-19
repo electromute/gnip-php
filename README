@@ -91,8 +91,8 @@ integration tests.
 PublisherIntegrationTest.php is for publishers only and you must set up the correct
 information in the setup section of the test file.
 
-FilterIntegrationTest.php can be run by anyone, but you must set up the correct
-information in the setup section of the test file.
+FilterIntegrationTest.php and RuleIntegrationTest.php can be run by anyone, but 
+you must set up the correct information in the setup section of the test file.
 
 Integration tests can be run by using the command:
 
@@ -296,8 +296,31 @@ You can see the running list of activity buckets on the Gnip site:
 	https://prod.gnipcentral.com/publishers/gnip-test-publisher/activity/
 
 
+=== Example 6: Add rules in large batches ===
 
+For larger sets of rule additions, you'll want to send the them in a batch on 
+the rule object rather than attached to the filter object. Here's an example of 
+a batch add:
 
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
+	$rulesArray = array(new Services_Gnip_Rule("actor", "bob"),
+						new Services_Gnip_Rule("actor", "sally"),
+						new Services_Gnip_Rule("actor", "joe"));
+	echo $gnip->addBatchRules("gnip-test-publisher", "myNotificationFilter", $rulesArray);
+	
+You should see a status message of "Success".
+	
+You can test if a rule already exists by calling:
+
+	$rule = new Services_Gnip_Rule("actor", "bob");
+	if($gnip->ruleExists($publisher, $filter, $rule)){
+		echo "yay, the rule exists!";
+	}
+
+If you like, you can delete the rule:
+	echo $gnip->deleteRule($publisher, $filter, $rule);
+	
+You should see a status message of "Success".
 
 ==== Publisher Actions ====
 
@@ -357,6 +380,3 @@ Here is how you can publish activities to the activity stream:
 	echo $gnip->publish($mypub, array($activity));
 	
 	You should see a status message of "Success".
-
-
-just a test...
