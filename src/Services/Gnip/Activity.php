@@ -18,23 +18,38 @@ class Services_Gnip_Activity
 
     /**
      * Constructor.
+     * please review gnip.xsd for element and attributes properties and requirements
      * 
      * @param string or DateTime $at Time sent by publisher, required 
      * @param string $action Action of post as sent by the publisher, required
      * @param string $activityID ID sent by the pulbisher, this can be GUID, etc. optional
      * @param string $URL Machine readable direct lookup parsible xml document url. optional
-     * @param array $source Client used to deliver action (SMS, web, etc.). 2d array can be sent. optional
-     * @param array $keyword 2d array can be sent. optional.
+     * @param array $source client used to deliver action (SMS, web, etc.). optional
+     *          can contain one or more arrays
+     *          example: array(array('source'=>'web'))
+     *          example: array(array('source'=>'web'), array('source'=>'sms'))
+     * @param array $keyword optional.
+     *          can contain one or more arrays
+     *          example: array(array('keyword'=>'gnip'))
+     *          example: array(array('keyword'=>'gnip'), array('keyword'=>'gnop'))
      * @param array of Services_Gnip_Place objects $place Contains place data. optional
-     * @param array $actor Profile page of entity performing action. 2d array can be sent. optional
+     * @param array $actor Profile page of entity performing action. optional
+     *          can contain one or more arrays
+     *          example: array(array('actor'=>'joe', 'metaURL'=>'http://place.com', 'uid'=>'1234'))
      * @param array $destinationURL The one URL that best describes this action. 
      *        For instance, a digg submission action would be the digg landing page for that item. 
-     *        For a digg action, it would be URL for the actual link being dugg. 
-     *        2d array can be sent. optional
-     * @param array $tag User generated tag for action. 2d array can be sent. optional
-     * @param array $to Response to entity. 2d array can be sent. optional
-     * @param array $regardingURL Distinct URL outside the service itself that was used in regards to activity. 
-     *        2d array can be sent. optional 
+     *        For a digg action, it would be URL for the actual link being dugg. optional
+     *          can contain one or more arrays
+     *          example: array(array('destinationURL'=>'http://place.com', 'metaURL'=>'http://place.com/metainfo'))
+     * @param array $tag User generated tag for action. optional
+     *          can contain one or more arrays
+     *          example: array(array('tag'=>'stories', 'metaURL'=>'http://place.com/tags/stories'), array('tag'=>'code', 'metaURL'=>'http://place.com/tags/code'))
+     * @param array $to Response to entity. optional
+     *          can contain one ore more arrays
+     *          example: array(array('to'=>'Sue', 'metaURL'=>'http://place.com/users/sue'))
+     * @param array $regardingURL Distinct URL outside the service itself that was used in regards to activity. optional 
+     *          can contain one or more arrays
+     *          example: array(array('regardingURL'=>'http://theotherplace.com', 'metaURL'=>'http://theotherplace.com/metainfo'))
      * @param array of Services_Gnip_Payload objects $payload Payload objects. optional
      * 
      * Creates a Services_Gnip_Activity object.
@@ -77,7 +92,7 @@ class Services_Gnip_Activity
         if($this->activityID != null){
             $root->appendChild($doc->createElement('activityID', $this->activityID));
         }
-        if($this->activityID != null){
+        if($this->URL != null){
             $root->appendChild($doc->createElement('URL', $this->URL));
         }
         if ($this->source != null){
@@ -116,11 +131,6 @@ class Services_Gnip_Activity
             if(@property_exists($this->payload, "raw")){ 
                 //one object was sent
                 $this->payload->toXML($doc, $root);
-            } else { 
-                //array of objects was sent
-                foreach ($this->payload as $key => $val){
-                    $val->toXML($doc, $root);
-                }
             }
         }
         return $doc->asXML();
@@ -147,11 +157,7 @@ class Services_Gnip_Activity
         $place_result = $xml->xpath('place');
         if (array_key_exists(0, $place_result)){
             foreach ($place_result as $k=>$v){
-                if (array_key_exists(1, $place_result)){
-                    $found_place[] = Services_Gnip_Place::fromXML($v);
-                } else {
-                    $found_place = Services_Gnip_Place::fromXML($v);
-                }
+                $found_place[] = Services_Gnip_Place::fromXML($v);
             }
         } else {
             $found_place = null;
@@ -166,11 +172,7 @@ class Services_Gnip_Activity
         $payload_result = $xml->xpath('payload');
         if (array_key_exists(0, $payload_result)){
             foreach ($payload_result as $k=>$v){
-                if (array_key_exists(1, $payload_result)){
-                    $found_payload[] = Services_Gnip_Payload::fromXML($v);
-                } else {
-                    $found_payload = Services_Gnip_Payload::fromXML($v);
-                }
+                $found_payload = Services_Gnip_Payload::fromXML($v);
             }
         } else {
             $found_payload = null;
@@ -194,6 +196,7 @@ class Services_Gnip_Activity
     {
         $xmlStuff = null;
         $nodesNum = count($result);
+        $xmlStuff = array();
         if($nodesNum >= 1){
             foreach ($result as $key => $val){
                 if(is_object($val)){ 
@@ -206,11 +209,7 @@ class Services_Gnip_Activity
                             }
                         } 
                     }
-                    if ($nodesNum >= 2){
-                        $xmlStuff[] = $stuff;
-                    } else {
-                        $xmlStuff = $stuff;
-                    }
+                    $xmlStuff[] = $stuff;
                 }
             }
         } else {

@@ -66,7 +66,7 @@ class PayloadTest extends PHPUnit_Framework_TestCase
         $payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
         $this->assertEquals("title", $payload->title);
         $this->assertEquals("body", $payload->body);
-        $this->assertEquals(array("mediaURL" => "http://www.gnipcentral.com", "height" => "200", "width" => "200", "duration" => "107", "mimeType" => "video/quicktime", "type" => "movie"), $payload->mediaURL);
+        $this->assertContains(array("mediaURL" => "http://www.gnipcentral.com", "height" => "200", "width" => "200", "duration" => "107", "mimeType" => "video/quicktime", "type" => "movie"), $payload->mediaURL);
         $this->assertEquals("raw", $payload->decodedRaw());        
     }
     

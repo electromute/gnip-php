@@ -164,7 +164,8 @@ class Services_Gnip
      * An optional time parameter can be passed, defaults to current.
      */    
     function getPublisherActivities($publisher, $when = "current") {
-        if ($when != "current") { $when = $this->helper->bucketName($when); }
+        //if ($when != "current") { $when = $this->helper->bucketName($when); }
+        
         try {
             $activities = $this->parseActivities($this->helper->doHttpGet($this->scope . $publisher->getActivityUrl($when)));
             return $activities;

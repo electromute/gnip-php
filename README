@@ -384,7 +384,7 @@ You can also review the class files for specific definitions.
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>", "my");
     
-    $place = new Services_Gnip_Place("38.2638886 -106.126131", 5.343, 4, "blah", "Chloride Mine", "nearby");
+    $place = array(new Services_Gnip_Place("38.2638886 -106.126131", 5.343, 4, "blah", "Chloride Mine", "nearby"));
     $payload = new Services_Gnip_Payload("raw", "title", "body", 
                             array("mediaURL" => "http://gnipcentral.com", 
                                 "height" => "200", 
@@ -398,23 +398,28 @@ You can also review the class files for specific definitions.
                 "upload", 
                 strval(rand(0, 9999999)), 
                 "http://www.gnipcentral.com", 
-                array('source' => 'sms'),
+                array(
+                    array('source' => 'sms')),
                 array(
                     array('keyword' => 'ping'), 
                     array('keyword'=>'pong')), 
                 $place, 
-                array('actor' => 'bob',
+                array(
+                    array('actor' => 'bob',
                     'metaURL' => 'http://somewhere.com/users/bob',
-                    'uid' => '12234'), 
-                array('destinationURL' => 'http://somewhere.com', 
-                    'metaURL' => 'http://somewhere.com/someplace'), 
+                    'uid' => '12234')), 
+                array(
+                    array('destinationURL' => 'http://somewhere.com', 
+                    'metaURL' => 'http://somewhere.com/someplace')), 
                 array(
                     array('tag'=>'pongtag'), 
                     array('tag'=>'pingtag')), 
-                array('to'=>'sally', 
-                    'metaURL' => 'http://gnipcentral.com/users/sally'), 
-                array('regardingURL' => 'http://someurl.com',
-                    'metaURL' => 'http://someurlmeta.com'), 
+                array(
+                    array('to'=>'sally', 
+                    'metaURL' => 'http://gnipcentral.com/users/sally')), 
+                array(
+                    array('regardingURL' => 'http://someurl.com',
+                    'metaURL' => 'http://someurlmeta.com')), 
                 $payload);
                                            
                                            	

@@ -9,27 +9,29 @@ class ActivityTest extends PHPUnit_Framework_TestCase
         $this->action = "post";
         $this->activityID = "yk994589klsl";
         $this->URL = "http://www.gnipcentral.com";
-        $this->source = array("source" => "web");
+        $this->source = array(array("source" => "web"));
         $this->sourceArray = array(
-                            $this->source, 
+                            array("source" => "web"), 
                             array("source" => "sms")
                             );
-        $this->keyword = array("keyword" => "ping");
+        $this->keyword = array(array("keyword" => "ping"));
         $this->keywordArray = array(
-                            $this->keyword, 
+                            array("keyword" => "ping"), 
                             array("keyword" => "pong")
                             );
-        $this->place = new Services_Gnip_Place("45.256 -71.92", null, null, null, null, null);
+        $this->place = array(new Services_Gnip_Place("45.256 -71.92", null, null, null, null, null));
         $this->placeArray = array(
-                            $this->place,
+                            new Services_Gnip_Place("45.256 -71.92", null, null, null, null, null),
                             new Services_Gnip_Place("22.778 -54.998", 5280, 3, "City", "Boulder", null),
                             new Services_Gnip_Place("77.900 - 23.998")
                             );
-        $this->actor = array("actor" => "Joe",
+        $this->actor = array(array("actor" => "Joe",
                                 "metaURL" => "http://www.gnipcentral.com/users/joe",
-                                "uid" => "1222");
+                                "uid" => "1222"));
         $this->actorArray = array(
-                            $this->actor,
+                            array("actor" => "Joe",
+                                "metaURL" => "http://www.gnipcentral.com/users/joe",
+                                "uid" => "1222"),
                             array(
                                 "actor" => "Bob",
                                 "metaURL" => "http://www.gnipcentral.com/users/bob"),
@@ -37,36 +39,55 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                                 "actor" => "Susan",
                                 "uid" => "1444")
                             );
-        $this->destinationURL = array("destinationURL" => "http://somewhere.com",
-                                        "metaURL" => "http://somewhere.com/someplace");
+        $this->destinationURL = array(array("destinationURL" => "http://somewhere.com",
+                                        "metaURL" => "http://somewhere.com/someplace"));
         $this->destinationURLArray = array(
-                                        $this->destinationURL,
-                                        array("destinationURL" => "http://flickr.com")
+                            array("destinationURL" => "http://somewhere.com",
+                                "metaURL" => "http://somewhere.com/someplace"),
+                            array("destinationURL" => "http://flickr.com")
                                     );
-        $this->tag = array("tag" => "horses",
-                            "metaURL" => "http://gnipcentral.com/tags/horses");
+        $this->tag = array(array("tag" => "horses",
+                            "metaURL" => "http://gnipcentral.com/tags/horses"));
         $this->tagArray = array(
-                            $this->tag,
+                            array("tag" => "horses",
+                                "metaURL" => "http://gnipcentral.com/tags/horses"),
                             array("tag" => "cows")
                         );
-        $this->to = array("to" => "Mary",
-                        "metaURL" => "http://gnipcentral.com/users/mary");
+        $this->to = array(array("to" => "Mary",
+                        "metaURL" => "http://gnipcentral.com/users/mary"));
         $this->toArray = array(
-                $this->to,
+                array("to" => "Mary",
+                    "metaURL" => "http://gnipcentral.com/users/mary"),
                 array("to" => "James")
                 );
-        $this->regardingURL = array("regardingURL" => "http://blogger.com/users/posts/mary",
-                            "metaURL" => "http://blogger.com/users/mary");
+        $this->regardingURL = array(array("regardingURL" => "http://blogger.com/users/posts/mary",
+                            "metaURL" => "http://blogger.com/users/mary"));
         $this->regardingURLArray = array(
-                            $this->regardingURL,
+                            array("regardingURL" => "http://blogger.com/users/posts/mary",
+                                "metaURL" => "http://blogger.com/users/mary"),
                             array("regardingURL" => "http://blogger.com/users/posts/james")
                             );
         $this->payload = new Services_Gnip_Payload("raw");
-        $this->payloadArray = array(
-                                $this->payload,
-                                new Services_Gnip_Payload("raw", "title", "body", array(array("mediaURL"=>"http://www.flickr.com/tour", "type" => "image", "mimeType" => "image/png"), array("mediaURL" => "http://www.gnipcentral.com/login", "type" => "movie", "mimeType" => "video/quicktime")))
-                                );
+        $this->payloadArray = new Services_Gnip_Payload("raw", "title", "body", array(array("mediaURL"=>"http://www.flickr.com/tour", "type" => "image", "mimeType" => "image/png"), array("mediaURL" => "http://www.gnipcentral.com/login", "type" => "movie", "mimeType" => "video/quicktime")));
 
+    }
+    
+    function testValidateSchema(){
+        $a = new Services_Gnip_Activity($this->at, $this->action, $this->activityID, $this->URL, $this->source, $this->keyword, null, $this->actor, $this->destinationURL, $this->tag, $this->to, $this->regardingURL, null);
+        
+        $d = new GnipDOMDocument();
+        $d->loadXML($a->toXML()); 
+        $status = $d->schemaValidate(dirname(__FILE__) . '../../../src/Services/Gnip/gnip.xsd'); 
+        $this->assertEquals($status, true);
+    }
+    
+    function testValidatePayloadSchema(){
+        $a = new Services_Gnip_Activity($this->at, $this->action, $this->activityID, $this->URL, $this->source, $this->keyword, null, $this->actor, $this->destinationURL, $this->tag, $this->to, $this->regardingURL, array($this->payload, $this->payloadArray));
+        
+        $d = new GnipDOMDocument();
+        $d->loadXML($a->toXML()); 
+        $status = $d->schemaValidate(dirname(__FILE__) . '../../../src/Services/Gnip/gnip.xsd'); 
+        $this->assertEquals($status, true);
     }
     
     function testToXml()
@@ -163,6 +184,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                 '<regardingURL>http://blogger.com/users/posts/james</regardingURL>'.
                 '</activity>';
         $d = new Services_Gnip_Activity($this->at, $this->action, $this->activityID, $this->URL, $this->sourceArray, $this->keywordArray, null, $this->actorArray, $this->destinationURLArray, $this->tagArray, $this->toArray, $this->regardingURLArray, null);
+        
         $this->assertEquals($expected_xml, $d->toXML());
     }
 
@@ -198,7 +220,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected_xml, $d->toXML());
     }
 
-    function testToXMLWithPayloadUnbounds()
+    function testToXMLWithPayloadMediaURLUnbounds()
     {
         $expected_xml ='<activity>'.
                 '<at>2008-07-02T11:16:16+00:00</at>'.
@@ -225,10 +247,10 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                 '<to>James</to>'.
                 '<regardingURL metaURL="http://blogger.com/users/mary">http://blogger.com/users/posts/mary</regardingURL>'.
                 '<regardingURL>http://blogger.com/users/posts/james</regardingURL>'.
-                '<payload><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
                 '<payload><title>title</title><body>body</body><mediaURL type="image" mimeType="image/png">http://www.flickr.com/tour</mediaURL><mediaURL type="movie" mimeType="video/quicktime">http://www.gnipcentral.com/login</mediaURL><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
                 '</activity>';
         $d = new Services_Gnip_Activity($this->at, $this->action, $this->activityID, $this->URL, $this->sourceArray, $this->keywordArray, $this->placeArray, $this->actorArray, $this->destinationURLArray, $this->tagArray, $this->toArray, $this->regardingURLArray, $this->payloadArray);
+        
         $this->assertEquals($expected_xml, $d->toXML());
     }
 
@@ -250,7 +272,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
             '</activity>';
 
         $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
-
+        
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->activityID, $a->activityID);
@@ -364,12 +386,11 @@ class ActivityTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->placeArray, $a->place);
     }
 
-    function testFromXMLWithPayloadUnbounds()
+    function testFromXMLWithPayloadUnboundMediaURL()
     {
         $xml ='<activity>'.
                 '<at>2008-07-02T11:16:16+00:00</at>'.
                 '<action>post</action>'.
-                '<payload><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
                 '<payload><title>title</title><body>body</body><mediaURL type="image" mimeType="image/png">http://www.flickr.com/tour</mediaURL><mediaURL type="movie" mimeType="video/quicktime">http://www.gnipcentral.com/login</mediaURL><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
                 '</activity>';
         $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
@@ -377,6 +398,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->payloadArray, $a->payload);
     }
+
 
 }
 ?>

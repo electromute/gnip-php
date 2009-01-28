@@ -9,9 +9,9 @@ class RuleIntegrationTest extends PHPUnit_Framework_TestCase
         // make sure that if the filter is created on a publisher you own, the namespace is "my"
         // if the publisher is public, make sure the namespace is "gnip"
         $this->gnip = new Services_Gnip("", "", "gnip");
-        $this->publisher = "";
-        $this->filter = "";
-        $this->rule = new Services_Gnip_Rule("to", "");
+        $this->publisher = ""; // string publisher name
+        $this->filter = ""; //string filter name you have on above publisher
+        $this->rule = new Services_Gnip_Rule("to", ""); //add rule for to
         // end editable section
 
         // you do not need to edit these below

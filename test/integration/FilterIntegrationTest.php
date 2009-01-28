@@ -7,7 +7,7 @@ class FilterIntegrationTest extends PHPUnit_Framework_TestCase
     {
         //edit the following with your relevant data
         $this->gnip = new Services_Gnip("", "", "my");
-        $this->pubName = "";
+        $this->pubName = ""; //string of your publisher
         $this->publisher = new Services_Gnip_Publisher($this->pubName, "actor");
         //end editable section
 

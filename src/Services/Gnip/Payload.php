@@ -89,6 +89,7 @@ class Services_Gnip_Payload
         $found_body = strlen(strval($xml->body)) ? strval($xml->body) : null;
         $result = $xml->xpath('mediaURL');
         $nodesNum = count($result);
+        $found_mediaURL = array();
         
         if (!empty($result)){
         if($nodesNum >= 1){
@@ -100,11 +101,7 @@ class Services_Gnip_Payload
                             $mediaStuff[$attrName] = strval($attrVal);
                         }
                     }
-                    if ($nodesNum >= 2){
-                        $found_mediaURL[] = $mediaStuff;
-                    } else {
-                        $found_mediaURL = $mediaStuff;
-                    }
+                    $found_mediaURL[] = $mediaStuff;
                 }
             }
         } else {
