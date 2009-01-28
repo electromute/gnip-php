@@ -5,25 +5,27 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
 {
     public function setUp() 
     {
-		// You'll need to edit this section and fill in all relevant info
-        $this->gnip = new Services_Gnip("", "");
+        // You'll need to edit this section and fill in all relevant info
+        // You'll need to scope this to your namespace, "my"
+        // Make sure the supported rule types match your own, make sure its only actor
+        $this->gnip = new Services_Gnip("", "", "my");
         $rule_types = array(new Services_Gnip_Rule_Type('actor'));
-        $this->publisher = new Services_Gnip_Publisher("", $rule_types);
+        $this->publisher = new Services_Gnip_Publisher("testme", $rule_types);
     }
 
     public function testGetPublishers()
     {
         $publishers = $this->gnip->getPublishers();
-		$names = array();
-		foreach ($publishers as $publisher){
-			$names[] = $publisher->name;
-		}
+        $names = array();
+        foreach ($publishers as $publisher){
+            $names[] = $publisher->name;
+        }
         assertContains($this->publisher->name, $names);
     }
 
     public function testGetPublisher()
     {
-		$pub = $this->gnip->getPublisher($this->publisher->name);
+        $pub = $this->gnip->getPublisher($this->publisher->name);
         $this->assertEquals($pub, $this->publisher);
     }
 
@@ -50,10 +52,10 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
 
 	public function testGetNotifications()
     {
-		$activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'sally', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com');
+        $activity = new Services_Gnip_Activity("2008-07-02T11:16:16+00:00", "upload", strval(rand(0, 9999999)), "http://www.gnipcentral.com", array('source' => 'sms'), array(array('keyword' => 'ping'),array('keyword' => 'pong')), null, array('actor' => 'bob'), array("destinationURL" => "http://somewhere.com", "metaURL" => "http://somewhere.com/someplace"), array('tag'=>'pong'), array('to'=>'sally', 'metaURL' => 'http://gnipcentral.com/users/sally'), null, null);
 
         $this->gnip->publish($this->publisher, array($activity));
-
+        
         $activities = $this->gnip->getPublisherNotifications($this->publisher);
         assertContains($activity, $activities);
 
@@ -63,12 +65,13 @@ class PublisherIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testGetActivitiesWithPayload()
     {
-		$pub = $this->gnip->getPublisher($this->publisher->name);
+        $pub = $this->gnip->getPublisher($this->publisher->name);
         $this->assertEquals($pub, $this->publisher);
+        
+        $place = new Services_Gnip_Place("38.2638886 -106.126131", 5280, null, "city", "Boulder", null);
+        $payload = new Services_Gnip_Payload("raw", "title", "body", array(array("mediaURL"=>"http://www.flickr.com/tour", "type" => "image", "mimeType" => "image/png"), array("mediaURL" => "http://www.gnipcentral.com/login", "type" => "movie", "mimeType" => "video/quicktime")));
 
-        $payload = new Services_Gnip_Payload("body", "raw");
-
-        $activity = new Services_Gnip_Activity('2008-07-02T11:16:16+00:00', 'upload', 'joe', strval(rand(0, 9999999)), 'web', 'trains,planes,automobiles', 'bob', 'http://example.com', $payload);
+        $activity = new Services_Gnip_Activity("2008-07-02T11:16:16+00:00", "upload", strval(rand(0, 9999999)), "http://www.gnipcentral.com", array('source' => 'sms'), array(array('keyword' => 'ping'),array('keyword' => 'pong')), $place, array('actor' => 'bob'), array("destinationURL" => "http://somewhere.com", "metaURL" => "http://somewhere.com/someplace"), array('tag'=>'pong'), array('to'=>'sally', 'metaURL' => 'http://gnipcentral.com/users/sally'), null, $payload);
 
         $this->gnip->publish($this->publisher, array($activity));
 

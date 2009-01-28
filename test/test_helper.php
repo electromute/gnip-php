@@ -10,7 +10,7 @@ function assertContains($expected, $collection)
     foreach ($collection as $actual) {
         if ($expected == $actual) { return; }
     }
-    
+
     PHPUnit_Framework_Assert::assertContains($expected, $collection);
 }
 ?>

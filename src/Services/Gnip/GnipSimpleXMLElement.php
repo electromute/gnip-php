@@ -5,44 +5,45 @@
  */
 class GnipSimpleXMLElement extends SimpleXMLElement
 {
-	
-	/**
+
+    /**
      * Add attributes.
      * 
-	 * @param string $name name of attribute
-	 * @param string $value value of the attribute
-	 *
+     * @param string $name name of attribute
+     * @param string $value value of the attribute
+     * @param string $namespace optional namespace
+     *
      * Adds an attribute to the parent.
      */
-    public function addOptionalAttribute($name, $value)
+    public function addOptionalAttribute($name, $value, $namespace = null)
     {
         if(! empty($value)) {
-          parent::addAttribute($name, $value);
-        }
-    }
-
-
-	/**
-     * Add child.
-     * 
-	 * @param string $name name of attribute
-	 * @param string $value value of the attribute
-	 *
-     * Adds an child to the XML document.
-     */
-	public function addOptionalChild($name, $value)
-    {
-        if(!empty($value)) {
-          parent::addChild($name, $value);
+          parent::addAttribute($name, $value, $namespace);
         }
     }
     
+    /**
+     * Add child.
+     * 
+     * @param string $name name of attribute
+     * @param string $value value of the attribute
+     * @param string $namespace optional namespace
+     *
+     * Adds an child to the XML document.
+     */
+    public function addOptionalChild($name, $value, $namespace = null)
+    {
+        if(!empty($value)) {
+          parent::addChild($name, $value, $namespace);
+        }
+    }
 
-	/**
+
+    /**
      * As XML.
      * 
-	 * @return full proper xml document
-	 *
+     * @return full proper xml document
+     *
      * Fills in the correct header and footer for a proper XML document.
      */
     public function asXML()

@@ -9,12 +9,12 @@ class Services_Gnip_Helper
     private $base_url;
 
 
-	/**
+    /**
      * Constructor.
      * 
      * @param string $username
-	 * @param string $password
-	 * @param string $base_url
+     * @param string $password
+     * @param string $base_url
      * 
      * Creates a Services_Gnip_Helper object.
      */
@@ -26,12 +26,12 @@ class Services_Gnip_Helper
     }
 
 
-	/**
+    /**
      * HTTP Get.
      * 
-	 * @param string $url
+     * @param string $url
      * @return string status of request
-	 *
+     *
      * Performs an HTTP GET request to a given URL.
      */
     function doHttpGet($url)
@@ -40,13 +40,13 @@ class Services_Gnip_Helper
     }
 
 
-	/**
+    /**
      * HTTP Post.
      * 
-	 * @param string $url
-	 * @param string $data xml formatted data
+     * @param string $url
+     * @param string $data xml formatted data
      * @return string status of request
-	 *
+     *
      * Performs an HTTP POST request to a given URL.
      */
     function doHttpPost($url, $data)
@@ -60,13 +60,13 @@ class Services_Gnip_Helper
     }
 
 
-	/**
+    /**
      * HTTP Put.
      * 
-	 * @param string $url
-	 * @param string $data xml formatted data
+     * @param string $url
+     * @param string $data xml formatted data
      * @return string status of request
-	 *
+     *
      * Performs an HTTP PUT request to a given URL.
      */
     function doHttpPut($url, $data)
@@ -98,17 +98,17 @@ class Services_Gnip_Helper
     }
     
 
-	/**
+    /**
      * Validate.
      * 
-	 * @param string $xml
+     * @param string $xml
      * @return string xml you passed in
-	 *
+     *
      * Validates the xml data against Gnip schema. 
      */
     private function validate($xml) 
     {
-        $doc = new DOMDocument();
+        $doc = new GnipDOMDocument();
         $doc->loadXML($xml); 
         $doc->schemaValidate(dirname(__FILE__) . '/gnip.xsd'); 
         return $xml;
@@ -170,14 +170,14 @@ class Services_Gnip_Helper
     }
 
 
-	/**
+    /**
      * Do a CURL request.
      * 
-	 * @param string $url
-	 * @param array $curl_options
-	 * @param boolean $isGzipEncoded default is false
+     * @param string $url
+     * @param array $curl_options
+     * @param boolean $isGzipEncoded default is false
      * @return string response
-	 *
+     *
      * Performs a CURL operation based on the array of curl_options sent.
      */
     function doRequest($url, $curl_options = array(), $isGzipEncoded = false)

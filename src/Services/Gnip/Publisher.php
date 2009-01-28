@@ -6,23 +6,23 @@
 class Services_Gnip_Publisher
 {
     public $supported_rule_types;
+    public $name;
 
-
-	/**
+    /**
      * Constructor.
      * 
      * @param string $name
-	 * @param array $supported_rule_types array of Services_Gnip_Rule_Type objects
+     * @param array $supported_rule_types array of Services_Gnip_Rule_Type objects
      * 
      * Creates a Services_Gnip_Publisher object. Each publisher must have at 
-	 * least one rule type.
-	 * The current supported rule types are:
-	 * Actor 
-	 * To
-	 * Regarding
-	 * Source
-	 * Tag
-	 * 
+     * least one rule type.
+     * The current supported rule types are:
+     * Actor 
+     * To
+     * Regarding
+     * Source
+     * Tag
+     * 
      */
     function __construct($name, $supported_rule_types = array())
     { 
@@ -31,11 +31,11 @@ class Services_Gnip_Publisher
     }
 
 
-	/**
+    /**
      * To XML.
      * 
      * @return XML formatted publisher data
-	 *
+     *
      * Converts the publisher to properly formatted XML.
      */
     function toXML()
@@ -51,12 +51,12 @@ class Services_Gnip_Publisher
     
 
 
-	/**
+    /**
      * From XML.
      * 
-	 * @param $xml SimpleXMLElelement XML data
+     * @param $xml SimpleXMLElelement XML data
      * @return object Services_Gnip_Publisher
-	 *
+     *
      * Converts XML formatted publisher to Services_Gnip_Publisher object.
      */
     function fromXML($xml) 
@@ -73,70 +73,107 @@ class Services_Gnip_Publisher
     }
 
 
-	/**
+    /**
      * Get create publisher URL.
      * 
      * @return string URL
-	 *
+     *
      * Returns the URL to send create publisher request to.
      */
-	public function getCreateUrl(){
-		return "/publishers";
-	}
-    
+    public static function getCreateUrl(){
+        return "/publishers";
+    }
 
-	/**
+
+     /**
      * Get publisher URL.
      * 
      * @return string URL
-	 *
+     *
      * Returns the URL of a given publisher by name.
      */
     public function getUrl()
     {
-        return "/publishers/".$this->name;
+        return "/publishers/".$this->name . ".xml";
     }
     
+    /**
+    * get publish to URL
+    *
+    *
+    * @return string URL
+    * 
+    * Returns the URL of a given publisher by name.
+    */
+    public function getPublishToUrl(){
+        return  "/publishers/".$this->name."/activity.xml";
+    }
 
-	/**
+
+     /**
      * Get index URL.
      * 
      * @return string URL
-	 *
+     *
      * Returns the URL of publisher list.
      */
     public static function getIndexUrl()
     {
         return "/publishers.xml";
     }
+    
+    
+    /**
+     * Get activity URL.
+     * 
+     * @param string $when timestamp of bucket
+     * @return string URL
+     *
+     * Returns the URL of activity bucket.
+     */
+    public function getActivityUrl($when){
+        return "/publishers/".$this->name."/activity/".$when.".xml";
+    }
+    
+    /**
+     * Get notification URL.
+     * 
+     * @param string $when timestamp of bucket
+     * @return string URL
+     *
+     * Returns the URL of notification bucket.
+     */
+    public function getNotificationUrl($when){
+        return "/publishers/".$this->name."/notification/".$when.".xml";
+    }
 
-	/**
+     /**
      * Add Rule Types.
      *
-	 * @param array $ruleTypes
+     * @param array $ruleTypes
      *
      * Add one or more ruleTypes from a Services_Gnip_Publisher object.
      */
     public function addRuleTypes($ruleTypes)
     {
         foreach ((array) $ruleTypes as $ruleType){
-			$this->supported_rule_types[] = $ruleType;
-		}
+            $this->supported_rule_types[] = $ruleType;
+        }
     }
 
-	/**
+     /**
      * Remove Rule Types.
      *
-	 * @param array $ruleTypes
+     * @param array $ruleTypes
      *
      * Removes one or more ruleTypes from a Services_Gnip_Publisher object.
      */
     public function removeRuleTypes($ruleTypes)
     {
         foreach ((array) $ruleTypes as $ruleType){
-			$key = array_search($ruleType, $this->supported_rule_types);
-			unset($this->supported_rule_types[$key]);
-		}
+            $key = array_search($ruleType, $this->supported_rule_types);
+            unset($this->supported_rule_types[$key]);
+        }
     }
 }
 ?>

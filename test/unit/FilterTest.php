@@ -5,18 +5,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
 {
     function testAddRules()
     {
-        $expected_xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '</filter>';
+        $expected_xml = '<filter name="test" fullData="true">'.
+        '<rule type="actor">me</rule>' .
+        '</filter>';
 
         $rules = array(new Services_Gnip_Rule("actor", "me"));
         $filter = new Services_Gnip_Filter('test', 'true', '', $rules);
         $this->assertEquals($expected_xml, $filter->toXML());
-
-        $expected_xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="to" value="you"/>' .
-            '</filter>';
+        
+        $expected_xml = '<filter name="test" fullData="true">'.
+        '<rule type="actor">me</rule>' .
+        '<rule type="to">you</rule>' .
+        '</filter>';
 
         $filter->addRules(array(new Services_Gnip_Rule("to", "you")));
         $this->assertEquals($expected_xml, $filter->toXML());
@@ -24,19 +24,19 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     function testRemoveRules()
     {
-        $expected_xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="actor" value="you"/>' .
-            '</filter>';
-
+        $expected_xml = '<filter name="test" fullData="true">'.
+        '<rule type="actor">me</rule>' .
+        '<rule type="actor">you</rule>' .
+        '</filter>';
+        
         $rules = array(new Services_Gnip_Rule("actor", "me"),
                 new Services_Gnip_Rule("actor", "you"));
         $filter = new Services_Gnip_Filter('test', 'true', '', $rules);
         $this->assertEquals($expected_xml, $filter->toXML());
 
-        $expected_xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '</filter>';
+        $expected_xml = '<filter name="test" fullData="true">'.
+        '<rule type="actor">me</rule>' .
+        '</filter>';
 
         $filter->removeRules(array(new Services_Gnip_Rule("actor", "you")));
         $this->assertEquals($expected_xml, $filter->toXML());
@@ -46,12 +46,12 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     function testToXmlWithoutpostUrl()
     {
-        $expected_xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="actor" value="you"/>' .
-            '<rule type="actor" value="bob"/>' .
-            '</filter>';
-
+        $expected_xml = '<filter name="test" fullData="true">'.
+        '<rule type="actor">me</rule>' .
+        '<rule type="actor">you</rule>' .
+        '<rule type="actor">bob</rule>' .
+        '</filter>';
+ 
         $rules = array(new Services_Gnip_Rule("actor", "me"), new Services_Gnip_Rule("actor", "you"), new Services_Gnip_Rule("actor", "bob"));
 
         $f = new Services_Gnip_Filter('test', 'true', '', $rules);
@@ -61,91 +61,91 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     function testToXmlWithpostUrl()
     {
-        $expected_xml = '<filter name="test" fullData="true">' .
-			'<postUrl>http://example.com</postUrl>' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="actor" value="you"/>' .
-            '<rule type="actor" value="bob"/>' .
+         $expected_xml = '<filter name="test" fullData="true">'.
+            '<postURL>http://example.com</postURL>' .
+            '<rule type="actor">me</rule>' .
+            '<rule type="actor">you</rule>' .
+            '<rule type="actor">bob</rule>' .
             '</filter>';
 
         $rules = array(new Services_Gnip_Rule("actor", "me"), 
-			new Services_Gnip_Rule("actor", "you"), 
-			new Services_Gnip_Rule("actor", "bob"));
+            new Services_Gnip_Rule("actor", "you"), 
+            new Services_Gnip_Rule("actor", "bob"));
 
         $f = new Services_Gnip_Filter('test', 'true', 'http://example.com', $rules);
         $this->assertEquals($expected_xml, $f->toXML());
-	}
+    }
 
     function testFromXmlWithoutpostUrl()
     {
         $xml = '<filter name="test" fullData="true">' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="actor" value="you"/>' .
-            '<rule type="actor" value="bob"/>' .
+            '<rule type="actor">me</rule>' .
+            '<rule type="actor">you</rule>' .
+            '<rule type="actor">bob</rule>' .
             '</filter>';
 
         $rules = array(new Services_Gnip_Rule("actor", "me"), 
-			new Services_Gnip_Rule("actor", "you"), 
-			new Services_Gnip_Rule("actor", "bob"));
+            new Services_Gnip_Rule("actor", "you"), 
+            new Services_Gnip_Rule("actor", "bob"));
 
         $f = Services_Gnip_Filter::fromXml(new SimpleXMLElement($xml));
-		$this->assertEquals("test", $f->name);
-		$this->assertEquals("true", $f->fullData);
-		$this->assertEquals("", $f->postUrl);
-		$this->assertEquals($rules, $f->rules);	
+        $this->assertEquals("test", $f->name);
+        $this->assertEquals("true", $f->fullData);
+        $this->assertEquals("", $f->postURL);
+        $this->assertEquals($rules, $f->rules);	
     }
 
-	function testFromXmlWithpostUrl()
+    function testFromXmlWithpostUrl()
     {
         $xml = '<filter name="test" fullData="true">' .
-            '<postUrl>http://example.com</postUrl>' .
-            '<rule type="actor" value="me"/>' .
-            '<rule type="actor" value="you"/>' .
-            '<rule type="actor" value="bob"/>' .
+            '<postURL>http://example.com</postURL>' .
+            '<rule type="actor">me</rule>' .
+            '<rule type="actor">you</rule>' .
+            '<rule type="actor">bob</rule>' .
             '</filter>';
 
         $rules = array(new Services_Gnip_Rule("actor", "me"), 
-			new Services_Gnip_Rule("actor", "you"), 
-			new Services_Gnip_Rule("actor", "bob"));
+            new Services_Gnip_Rule("actor", "you"), 
+            new Services_Gnip_Rule("actor", "bob"));
 
         $f = Services_Gnip_Filter::fromXml(new SimpleXMLElement($xml));
-		$this->assertEquals("test", $f->name);
-		$this->assertEquals("true", $f->fullData);
-		$this->assertEquals("http://example.com", $f->postUrl);
-		$this->assertEquals($rules, $f->rules);	
+        $this->assertEquals("test", $f->name);
+        $this->assertEquals("true", $f->fullData);
+        $this->assertEquals("http://example.com", $f->postURL);
+        $this->assertEquals($rules, $f->rules);	
     }
 
- 	function testGetCreateUrl()
+    function testGetCreateUrl()
     {
-		$pubRuleTypes = array();
-		$filterRules = array();
+        $pubRuleTypes = array();
+        $filterRules = array();
         $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
-		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
-		
+        $filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+
         $expected_url = "/publishers/" . $publisher->name . "/filters.xml";
-		$this->assertEquals($expected_url, $filter->getCreateUrl($publisher->name));
+        $this->assertEquals($expected_url, $filter->getCreateUrl($publisher->name));
     }
 
-	function testGetUrl()
+    function testGetUrl()
     {
-		$pubRuleTypes = array();
-		$filterRules = array();
+        $pubRuleTypes = array();
+        $filterRules = array();
         $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
-		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
-		
-        $expected_url = "/publishers/" . $publisher->name ."/filters/" . $filter->name;
-		$this->assertEquals($expected_url, $filter->getUrl($publisher->name));
+        $filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+
+        $expected_url = "/publishers/" . $publisher->name ."/filters/" . $filter->name. ".xml";
+        $this->assertEquals($expected_url, $filter->getUrl($publisher->name));
     }
 
-	function testGetIndexUrl()
+    function testGetIndexUrl()
     {
-		$pubRuleTypes = array();
-		$filterRules = array();
+        $pubRuleTypes = array();
+        $filterRules = array();
         $publisher = new Services_Gnip_Publisher('name', $pubRuleTypes);
-		$filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
-		
+        $filter = new Services_Gnip_Filter("myFilter", 'false', '', $filterRules);
+
         $expected_url = "/publishers/" . $publisher->name ."/filters.xml";
-		$this->assertEquals($expected_url, $filter->getIndexUrl($publisher->name));
+        $this->assertEquals($expected_url, $filter->getIndexUrl($publisher->name));
     }
 }
 ?>
