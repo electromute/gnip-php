@@ -56,31 +56,31 @@ class Services_Gnip_Rule
     /**
      * Get create rule URL.
      * 
-     * @param string $publisher name of publisher
-     * @param string $filter name of filter
+     * @param string $publisherName name of publisher
+     * @param string $filterName name of filter
      * @return string URL
      *
      * Returns the URL to send create rule request to belonging
      * to a given filter and publisher.
      */
-    public function getCreateUrl($publisher, $filter)
+    public function getCreateUrl($publisherName, $filterName)
     {
-        return "/publishers/" . $publisher . "/filters/" . $filter . "/rules.xml";
+        return "/publishers/" . $publisherName . "/filters/" . $filterName . "/rules.xml";
     }
 
     /**
      * Get rule URL.
      * 
-     * @param string $publisher name of publisher
-     * @param string $filter name of filter
+     * @param string $publisherName name of publisher
+     * @param string $filterName name of filter
      * @return string URL
      *
      * Returns the URL of a given filter by name belonging to 
      * a given publisher.
      */
-    public function getUrl($publisher, $filter)
+    public function getUrl($publisherName, $filterName)
     {
-        return "/publishers/" . $publisher ."/filters/" . $filter ."/rules.xml";
+        return "/publishers/" . $publisherName ."/filters/" . $filterName ."/rules.xml";
     }
 
 }

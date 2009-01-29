@@ -98,71 +98,71 @@ class Services_Gnip_Filter
     /**
      * Get create filter URL.
      * 
-     * @param string $publisher name of publisher
+     * @param string $publisherName name of publisher
      * @return string URL
      *
      * Returns the URL to send create filter request to belonging
      * to a given publisher.
      */
-    public function getCreateUrl($publisher)
+    public function getCreateUrl($publisherName)
     {
-        return "/publishers/" . $publisher . "/filters.xml";
+        return "/publishers/" . $publisherName . "/filters.xml";
     }
 
 
     /**
      * Get filter URL.
      * 
-     * @param string $publisher name of publisher
+     * @param string $publisherName name of publisher
      * @return string URL
      *
      * Returns the URL of a given filter by name belonging to 
      * a given publisher.
      */
-    public function getUrl($publisher)
+    public function getUrl($publisherName)
     {
-        return "/publishers/".$publisher."/filters/".$this->name.".xml";
+        return "/publishers/".$publisherName."/filters/".$this->name.".xml";
     }
 
     /**
      * Get filter activity URL.
      * 
+     * @param string $publisherName name of the publisher
      * @param string $when timestamp of bucket
-     * @param string $publisher name of the publisher
      * @return string URL
      *
      * Returns the URL of filter activity bucket.
      */
-    public function getActivityUrl($publisher, $when){
-        return "/publishers/".$publisher."/filters/".$this->name."/activity/".$when.".xml";
+    public function getActivityUrl($publisherName, $when){
+        return "/publishers/".$publisherName."/filters/".$this->name."/activity/".$when.".xml";
     }
 
     /**
      * Get filter notifications URL.
      * 
      * @param string $when timestamp of bucket
-     * @param string $publisher name of the publisher
+     * @param string $publisherName name of the publisher
      * @return string URL
      *
      * Returns the URL of notification activity bucket.
      */
-    public function getNotificationUrl($publisher, $when){
-        return "/publishers/".$publisher. "/filters/".$this->name."/notification/".$when.".xml";
+    public function getNotificationUrl($publisherName, $when){
+        return "/publishers/".$publisherName. "/filters/".$this->name."/notification/".$when.".xml";
     }
 
 
     /**
      * Get index URL.
      * 
-     * @param string $publisher name of publisher
+     * @param string $publisherName name of publisher
      * @return string URL
      *
      * Returns the URL of filter list for a publisher you have created
      * filters on.
      */
-    public function getIndexUrl($publisher)
+    public function getIndexUrl($publisherName)
     {
-        return "/publishers/" . $publisher ."/filters.xml";
+        return "/publishers/" . $publisherName ."/filters.xml";
     }
 
 }

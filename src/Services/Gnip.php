@@ -16,7 +16,6 @@ class Services_Gnip
     static public $uri = "https://review-v21.gnipcentral.com";
     public $helper;
     public $debug;
-    public $scope;
 
 
      /**
@@ -24,16 +23,12 @@ class Services_Gnip
      * 
      * @param string $username
      * @param string $password
-     * @param string $publisherScope current options are 'my' and 'gnip'
-     * my = publisher data you own
-     * gnip = public publisher data
      * 
      * Creates a Services_Gnip object.
      */
-    public function __construct($username, $password, $scope = 'my')
+    public function __construct($username, $password)
     {
         $this->helper = new Services_Gnip_Helper($username, $password, Services_Gnip::$uri);
-        $this->scope = $this->_scopeprep($scope);
     }
 
 
@@ -41,13 +36,15 @@ class Services_Gnip
      * Create Publisher.
      * 
      * @param object $publisher Services_Gnip_Publisher
+     * @param string $scope publisher scope (my or gnip) default is my
      * @return string response from the server
      * 
      * Creates a publisher on the Gnip server.
      */
-    function createPublisher($publisher){
+    function createPublisher($publisher, $scope="my"){
+        $scope = $this->_scopeprep($scope);
         try {
-            return $this->helper->doHttpPost($this->scope . $publisher->getCreateUrl(), $publisher->toXML());
+            return $this->helper->doHttpPost($scope . $publisher->getCreateUrl(), $publisher->toXML());
         } catch (Exception $e){
             $message = "There was a problem when calling createPublisher on $publisher->name. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
@@ -59,14 +56,16 @@ class Services_Gnip
      * Update Publisher.
      * 
      * @param object $publisher Services_Gnip_Publisher 
+     * @param string $scope publisher scope (my or gnip) default is my
      * @return string response from the server
      * 
      * Updates an existing publisher on the Gnip server. You must be the publisher
      * owner to update a publisher. 
      */
-    function updatePublisher($publisher){
+    function updatePublisher($publisher, $scope="my"){
+        $scope = $this->_scopeprep($scope);
         try {
-            return $this->helper->doHttpPut($this->scope . $publisher->getUrl(), $publisher->toXML());
+            return $this->helper->doHttpPut($scope . $publisher->getUrl(), $publisher->toXML());
         } catch (Exception $e){
             $message = "There was a problem when calling updatePublisher on $publisher->name. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
@@ -77,18 +76,20 @@ class Services_Gnip
      /**
      * Get a Publisher.
      * 
-     * @param string $name name of an existing publisher
+     * @param string $publisherName name of an existing publisher
+     * @param string $scope publisher scope (my or gnip) default is gnip
      * @return array containing publisher object
      * 
      * Retrieves a single publisher by name. 
      */
-    function getPublisher($name) {
-        $publisher = new Services_Gnip_Publisher($name);
+    function getPublisher($publisherName, $scope="gnip") {
+        $scope = $this->_scopeprep($scope);
+        $publisher = new Services_Gnip_Publisher($publisherName);
         try {
-            $xml = $this->helper->doHttpGet($this->scope . $publisher->getUrl());
+            $xml = $this->helper->doHttpGet($scope . $publisher->getUrl());
             return $publisher->fromXML(new SimpleXMLElement($xml));
         } catch (Exception $e) {
-            $message = "There was a problem when calling getPublisher on $name. Status message: ";
+            $message = "There was a problem when calling getPublisher on $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -97,24 +98,13 @@ class Services_Gnip
      /**
      * Get all Publishers.
      * 
-     * @param string scope optional scope to override Services_Gnip 
-     * object scope
-     *
+     * @param string $scope publisher scope (my or gnip) default is my
      * @return array containing Services_Gnip_Publisher objects
      * 
      * Retrieves all publishers from the Gnip servers. 
      */
-    function getPublishers($scope='') {
-        if(strlen($scope)) {
-            try {
-                $scope = $this->_scopeprep($scope);
-            } catch (Exception $e){
-                $message = "There was a problem when calling getPublishers(). Status message: ";
-                $this->_handleDebug($message, $this->debug, $e);
-            }
-        } else {
-            $scope = $this->scope;  
-        } 
+    function getAllPublishers($scope="my") {
+        $scope = $this->_scopeprep($scope);
         try {
             $xml = $this->helper->doHttpGet($scope . Services_Gnip_Publisher::getIndexUrl());
             $xml = new SimpleXMLElement($xml);
@@ -124,7 +114,7 @@ class Services_Gnip
             }
             return $publishers;
         } catch (Exception $e){
-            $message = "There was a problem when calling getPublishers(). Status message: ";
+            $message = "There was a problem when calling getAllPublishers(). Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -135,17 +125,19 @@ class Services_Gnip
      * 
      * @param object $publisher Services_Gnip_Publisher
      * @param array $activities array of Services_Gnip_Activity objects
+     * @param string $scope publisher scope (my or gnip) default is my
      * @return string response from the server
      * 
      * Publishes data to the Gnip server. You must be the publisher
      * owner to publish data under a publisher. 
      */
-    function publish($publisher, $activitiesArray) {        
-        $url =  Services_Gnip::$uri . $this->scope . $publisher->getPublishToUrl();
+    function publish($publisher, $activitiesArray, $scope="my") {
+        $scope = $this->_scopeprep($scope);        
+        $url =  Services_Gnip::$uri . $scope . $publisher->getPublishToUrl();
         $xmlString = $this->_buildChildXml($activitiesArray, 'activities');
         $xmlString = str_replace('<?xml version="1.0"?>','<?xml version="1.0" encoding="UTF-8"?>',$xmlString);
         try {
-            return $this->helper->doHttpPost($this->scope . $publisher->getPublishToUrl(), $xmlString);
+            return $this->helper->doHttpPost($scope . $publisher->getPublishToUrl(), $xmlString);
         } catch (Exception $e){
             $message = "There was a problem when calling publish on publisher $publisher->name. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
@@ -158,16 +150,17 @@ class Services_Gnip
      * 
      * @param object $publisher Services_Gnip_Publisher
      * @param long $when optional bucket time, defaults to current
+     * @param string $scope publisher scope (my or gnip) default is gnip
      * @return array containing activity objects
      * 
      * Retrieves activity data of a given publisher from the Gnip servers. 
      * An optional time parameter can be passed, defaults to current.
      */    
-    function getPublisherActivities($publisher, $when = "current") {
-        //if ($when != "current") { $when = $this->helper->bucketName($when); }
-        
+    function getPublisherActivities($publisher, $when, $scope="gnip") {
+        $scope = $this->_scopeprep($scope);
+        if ($when != "current") { $when = $this->helper->bucketName($when); }
         try {
-            $activities = $this->parseActivities($this->helper->doHttpGet($this->scope . $publisher->getActivityUrl($when)));
+            $activities = $this->parseActivities($this->helper->doHttpGet($scope . $publisher->getActivityUrl($when)));
             return $activities;
         } catch (Exception $e){
             $message = "There was a problem when calling getPublisherActivities on publisher $publisher->name. Status message: ";
@@ -181,15 +174,17 @@ class Services_Gnip
      * 
      * @param object $publisher Services_Gnip_Publisher
      * @param long $when optional bucket time, defaults to current
+     * @param string $scope publisher scope (my or gnip) default is gnip
      * @return array containing notification objects
      * 
      * Retrieves notification data of a given publisher from the Gnip servers. 
      * An optional time parameter can be passed, defaults to current.
      */	
-    function getPublisherNotifications($publisher, $when = "current") {
+    function getPublisherNotifications($publisher, $when, $scope="gnip") {
+        $scope = $this->_scopeprep($scope);
         if ($when != "current") { $when = $this->helper->bucketName($when); }
         try {
-            return $this->parseActivities($this->helper->doHttpGet($this->scope . $publisher->getNotificationUrl($when)));
+            return $this->parseActivities($this->helper->doHttpGet($scope . $publisher->getNotificationUrl($when)));
         } catch (Exception $e){
             $message = "There was a problem when calling getPublisherNotifications on publisher $publisher->name. Status message: ";
            $this->_handleDebug($message, $this->debug, $e);
@@ -200,21 +195,23 @@ class Services_Gnip
      /**
      * Get Filter Activities.
      * 
-     * @param string $publisher name of publisher
+     * @param string $publisherName name of publisher
      * @param object $filter Services_Gnip_Filter
      * @param long $when optional bucket time, defaults to current
+     * @param string $scope publisher scope (my or gnip) default is gnip
      * @return array of filtered activity objects
      * 
      * Retrieves filtered activitiy data by publisher from the Gnip servers
      * given a valid filter.
      * An optional time parameter can be passed, defaults to current.
      */
-    function getFilterActivities($publisher, $filter, $when = "current") {
+    function getFilterActivities($publisherName, $filter, $when, $scope="gnip") {
+        $scope = $this->_scopeprep($scope);
         if ($when != "current") { $when = $this->helper->bucketName($when); }
         try {
-            return $this->parseActivities($this->helper->doHttpGet($this->scope . $filter->getActivityUrl($publisher, $when)));
+            return $this->parseActivities($this->helper->doHttpGet($scope . $filter->getActivityUrl($publisherName, $when)));
         } catch (Exception $e){
-            $message = "There was a problem when calling getFilterActivities on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling getFilterActivities on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -224,21 +221,23 @@ class Services_Gnip
      /**
      * Get Filter Notifications.
      * 
-     * @param string $publisher name of publisher
+     * @param string $publisherName name of publisher
      * @param object $filter Services_Gnip_Filter
      * @param long $when optional bucket time, defaults to current
+     * @param string $scope publisher scope (my or gnip) default is gnip
      * @return array of filtered notification objects
      * 
      * Retrieves filtered notification data by publisher from the Gnip servers
      * given a valid filter.
      * An optional time parameter can be passed, defaults to current.
      */
-    function getFilterNotifications($publisher, $filter, $when = "current") {
+    function getFilterNotifications($publisherName, $filter, $when, $scope="gnip") {
+        $scope = $this->_scopeprep($scope);
         if ($when != "current") { $when = $this->helper->bucketName($when); }
         try {
-            return $this->parseActivities($this->helper->doHttpGet($this->scope . $filter->getNotificationUrl($publisher, $when)));
+            return $this->parseActivities($this->helper->doHttpGet($scope . $filter->getNotificationUrl($publisherName, $when)));
         } catch (Exception $e){
-            $message = "There was a problem when calling getFilterNotifications on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling getFilterNotifications on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         } 
     }
@@ -248,18 +247,19 @@ class Services_Gnip
      /**
      * Create Filter.
      * 
-     * @param string $publisher publisher name
+     * @param string $publisherName publisher name
      * @param object $filter Services_Gnip_Filter
      * @return string response from the server
      * 
      * Creates a filter on the Gnip servers for any publisher in the system.
      */    
-    function createFilter($publisher, $filter)
+    function createFilter($publisherName, $filter, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try{
-            return $this->helper->doHttpPost($this->scope . $filter->getCreateUrl($publisher), $filter->toXML());
+            return $this->helper->doHttpPost($scope . $filter->getCreateUrl($publisherName), $filter->toXML());
         } catch (Exception $e){
-            $message = "There was a problem when calling createFilter on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling createFilter on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -268,21 +268,22 @@ class Services_Gnip
      /**
      * Get Filter.
      * 
-     * @param string $publisher name of the publisher that contains the filter
-     * @param string $name name of filter
+     * @param string $publisherName name of the publisher that contains the filter
+     * @param string $filterName name of filter
      * @return array of filter objects
      * 
      * Retrieves a given filter from a given publisher. You must be the filter
      * owner to retrieve the filter.
      */
-    function getFilter($publisher, $name)
+    function getFilter($publisherName, $filterName, $scope="my")
     {
-        $filter = new Services_Gnip_Filter($name);
+        $scope = $this->_scopeprep($scope);
+        $filter = new Services_Gnip_Filter($filterName);
         try {
-            $xml = $this->helper->doHttpGet($this->scope . $filter->getUrl($publisher));
+            $xml = $this->helper->doHttpGet($scope . $filter->getUrl($publisherName));
             return Services_Gnip_Filter::fromXML(new SimpleXMLElement($xml));
         } catch (Exception $e){
-            $message = "There was a problem when calling getFilter on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling getFilter on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -291,19 +292,20 @@ class Services_Gnip
      /**
      * Update Filter.
      * 
-     * @param string $publisher name of the publisher that contains the filter
+     * @param string $publisherName name of the publisher that contains the filter
      * @param object $filter Services_Gnip_Filter
      * @return string response from the server
      * 
      * Updates the filter properties on a given filter. You must be the 
      * filter owner to update a filter.
      */
-    function updateFilter($publisher, $filter)
+    function updateFilter($publisherName, $filter, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try {
-            return $this->helper->doHttpPut($this->scope . $filter->getUrl($publisher), $filter->toXML());
+            return $this->helper->doHttpPut($scope . $filter->getUrl($publisherName), $filter->toXML());
         } catch (Exception $e){
-            $message = "There was a problem when calling updateFilter on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling updateFilter on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -312,18 +314,19 @@ class Services_Gnip
      /**
      * Delete Filter.
      * 
-     * @param string $publisher name of the publisher that contains the filter
+     * @param string $publisherName name of the publisher that contains the filter
      * @param object $filter Services_Gnip_Filter
      * @return string response from the server
      * 
      * Deletes a given filter from a given publisher.
      */
-    function deleteFilter($publisher, $filter)
+    function deleteFilter($publisherName, $filter, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try {
-            return $this->helper->doHttpDelete($this->scope . $filter->getUrl($publisher));
+            return $this->helper->doHttpDelete($scope . $filter->getUrl($publisherName));
         } catch (Exception $e){
-            $message = "There was a problem when calling deleteFilter on publisher $publisher. Status message: ";
+            $message = "There was a problem when calling deleteFilter on publisher $publisherName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -331,19 +334,20 @@ class Services_Gnip
      /**
      * Rule Exists.
      * 
-     * @param string $publisher name of the publisher that contains the filter
-     * @param string $filter name of filter that contains rules
+     * @param string $publisherName name of the publisher that contains the filter
+     * @param string $filterName name of filter that contains rules
      * @param object $rule Service_Gnip_Rule object
      * @return boolean true or false
      * 
      * Checks to see if a rule exists for a given filter/publisher combination.
      */
-    function ruleExists($publisher, $filter, $rule)
+    function ruleExists($publisherName, $filterName, $rule, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try {
-            $status = $this->helper->doHttpGet($this->scope . $rule->getUrl($publisher, $filter)."?type=$rule->type&value=$rule->value");
+            $status = $this->helper->doHttpGet($scope . $rule->getUrl($publisherName, $filterName)."?type=$rule->type&value=$rule->value");
         } catch (Exception $e){
-            $message = "There was a problem when calling getRule on publisher $publisher and filter $filter. Status message: ";
+            $message = "There was a problem when calling getRule on publisher $publisherName and filter $filterName. Status message: ";
             error_log($message . $e->getMessage(), 0);
             return 0;
         }
@@ -353,19 +357,20 @@ class Services_Gnip
      /**
      * Delete Rule.
      * 
-     * @param string $publisher name of the publisher that contains the filter
-     * @param string $filter name of filter that contains rules
+     * @param string $publisherName name of the publisher that contains the filter
+     * @param string $filterName name of filter that contains rules
      * @param object $rule Service_Gnip_Rule object
      * @return string response from the server
      * 
      * Deletes a rule given an existing valid publisher/filter combination.
      */
-    function deleteRule($publisher, $filter, $rule)
+    function deleteRule($publisherName, $filterName, $rule, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try {
-            return $this->helper->doHttpDelete($this->scope . $rule->getUrl($publisher, $filter)."?type=$rule->type&value=$rule->value");
+            return $this->helper->doHttpDelete($scope . $rule->getUrl($publisherName, $filterName)."?type=$rule->type&value=$rule->value");
         } catch (Exception $e){
-            $message = "There was a problem when calling deleteRule on publisher $publisher with filter $filter on rule type $rule->type and value $rule->value. Status message: ";
+            $message = "There was a problem when calling deleteRule on publisher $publisherName with filter $filterName on rule type $rule->type and value $rule->value. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -374,21 +379,22 @@ class Services_Gnip
      /**
      * Get Rule.
      * 
-     * @param string $publisher name of the publisher that contains the filter
-     * @param string $filter name of filter that contains rules
+     * @param string $publisherName name of the publisher that contains the filter
+     * @param string $filterName name of filter that contains rules
      * @param object $rule Service_Gnip_Rule object
      * @return Service_Gnip_Rule object
      * 
      * Gets a rule given an existing valid publisher/filter combination. Used
      * mostly for verification that the rule does exist.
      */
-    function getRule($publisher, $filter, $rule)
+    function getRule($publisherName, $filterName, $rule, $scope="my")
     {
+        $scope = $this->_scopeprep($scope);
         try {
-            $xml = $this->helper->doHttpGet($this->scope . $rule->getUrl($publisher, $filter)."?type=$rule->type&value=$rule->value");
+            $xml = $this->helper->doHttpGet($scope . $rule->getUrl($publisherName, $filterName)."?type=$rule->type&value=$rule->value");
             return Services_Gnip_Rule::fromXML(new SimpleXMLElement($xml));
         } catch (Exception $e){
-            $message = "There was a problem when calling getRule on publisher $publisher and filter $filter with rule type $rule->type and value $rule->value. Status message: ";
+            $message = "There was a problem when calling getRule on publisher $publisherName and filter $filterName with rule type $rule->type and value $rule->value. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }
@@ -396,26 +402,27 @@ class Services_Gnip
     /**
      * Add a Batch of Rules.
      * 
-     * @param string $publisher name of the publisher that contains the filter
-     * @param string $filter name of filter that contains rules
+     * @param string $publisherName name of the publisher that contains the filter
+     * @param string $filterName name of filter that contains rules
      * @param array $rulesArray array of Service_Gnip_Rule objects
      * @return string response from the server
      * 
      * Gets a rule given an existing valid publisher/filter combination.
      */
-    function addBatchRules($publisher, $filter, $rulesArray){
+    function addBatchRules($publisherName, $filterName, $rulesArray, $scope="my"){
+        $scope = $this->_scopeprep($scope);
         if(is_array($rulesArray)){
             $rules = $this->_buildChildXml($rulesArray, "rules");
             $rules = str_replace('<?xml version="1.0"?>','<?xml version="1.0" encoding="UTF-8"?>',$rules);
-            $url = $rulesArray[0]->getUrl($publisher, $filter);
+            $url = $rulesArray[0]->getUrl($publisherName, $filterName);
         } else {
             $rules = $rulesArray->toXML();
-            $url = $rulesArray->getUrl($publisher, $filter);	
+            $url = $rulesArray->getUrl($publisherName, $filterName);
         }
         try {
-            return $this->helper->doHttpPost($this->scope . $url, $rules);
+            return $this->helper->doHttpPost($scope . $url, $rules);
         } catch (Exception $e){
-            $message = "There was a problem when calling addBatchRules on publisher $publisher with filter $filter. Status message: ";
+            $message = "There was a problem when calling addBatchRules on publisher $publisherName with filter $filterName. Status message: ";
             $this->_handleDebug($message, $this->debug, $e);
         }
     }

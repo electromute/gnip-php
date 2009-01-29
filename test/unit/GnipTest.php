@@ -59,7 +59,7 @@ class GnipTest extends PHPUnit_Framework_TestCase
     {
         $this->helper->expect('get', '/my/publishers.xml', 
                               array('and_return' => "<publishers><publisher><name>bob</name><supportedRuleTypes><type>actor</type></supportedRuleTypes></publisher></publishers>"));
-        $publishers = $this->gnip->getPublishers('my');
+        $publishers = $this->gnip->getAllPublishers('my');
         $this->assertEquals("bob", $publishers[0]->name);
     }
 

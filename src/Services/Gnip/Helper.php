@@ -185,7 +185,7 @@ class Services_Gnip_Helper
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
-        $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.0",
+        $headers = array("Content-Type: application/xml", "User-Agent: Gnip-Client-PHP/2.1",
                          "Authorization: Basic ".base64_encode($loginInfo));
         if($isGzipEncoded)
             $headers[] = 'Content-Encoding: gzip';
@@ -195,7 +195,7 @@ class Services_Gnip_Helper
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
 
         curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
@@ -205,7 +205,6 @@ class Services_Gnip_Helper
         foreach ($curl_options as $option => $value) {
             curl_setopt($curl, $option, $value);
         }
-        
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);

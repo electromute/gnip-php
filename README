@@ -42,15 +42,14 @@ gnipherald. Please note that both the current and 0-1 minute old buckets are not
 static and therefore will contain a variable amount of data, but you'll get 
 quick feedback to know if you can connect and access the public notification data.
 
-Also note that the scope of the publisher is "gnip", which is a public 
-publisher that you do not own. If you create a publisher, it will be scoped 
-to "my". The default is "my".
+Also note that your requests must be scoped, "gnip" for publicly accessible publishers 
+and "my" for publishers you own. Please see Gnip.php for documentation.
 
 	<?
 	require_once 'src/Services/Gnip.php';
-	$gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+	$gnip = new Services_Gnip("<your account email>", "<your account password>");
 	$pub = new Services_Gnip_Publisher("gnipherald");
-	$notifications = $gnip->getPublisherNotifications($pub);
+	$notifications = $gnip->getPublisherNotifications($pub, "current", "gnip");
 	print_r($notifications);
 	?>
 	
@@ -138,9 +137,9 @@ get the publisher and request the stream. These examples uses the publisher
 
 *** Notification data stream request ***
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
     $pub = new Services_Gnip_Publisher("gnipherald");
-    $notifications = $gnip->getPublisherNotifications($pub);
+    $notifications = $gnip->getPublisherNotifications($pub, "current", "gnip");
     print_r($notifications);
 
 You can also view the current notifications bucket via web on the Gnip site:
@@ -149,9 +148,9 @@ You can also view the current notifications bucket via web on the Gnip site:
 	
 *** Notification data stream request with optional date param ***
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
     $pub = new Services_Gnip_Publisher("gnipherald");
-    $notifications = $gnip->getPublisherNotifications($pub, time() -120);
+    $notifications = $gnip->getPublisherNotifications($pub, time() -120, "gnip");
     print_r($notifications);
 
 You can see the running list of notification buckets on the Gnip site:
@@ -182,23 +181,24 @@ Gnip for the results when you need them. The following snippet creates (and
 retrieves) a notification filter called "myNotificationFilter" on the publisher 
 gnipherald.
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
 
     $rules = array(new Services_Gnip_Rule("actor", "you"),  
                    new Services_Gnip_Rule("actor", "me"), 
                    new Services_Gnip_Rule("actor", "mary"));
     $filter = new Services_Gnip_Filter("myNotificationFilter", 'false', '', $rules);
+    // while you have the filter object you can add or remove rules
     $filter->addRules(array(new Services_Gnip_Rule("actor", "jvaleski")));
     $filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
-    $status = $gnip->createFilter("gnipherald", $filter);
+    $status = $gnip->createFilter("gnipherald", $filter, "gnip");
     echo $status;
     
 The server will return :
 <result>Success</result>
 	
 You can view your filters by running:
-    print_r($gnip->getFilter("gnipherald", "myNotificationFilter"));
+    print_r($gnip->getFilter("gnipherald", "myNotificationFilter", "gnip"));
 
 Your actors list should be (not necessarily in this order): you, mary, jvaleski
 
@@ -221,22 +221,23 @@ you must ensure that the postURL parameter you set responds successfully to an
 HTTP HEAD request. (note that this example will throw an error because the POST 
 url is invalid).
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
 
     $rules = array(new Services_Gnip_Rule("actor", "you"),  
                    new Services_Gnip_Rule("actor", "me"), 
                    new Services_Gnip_Rule("actor", "mary"));
     $filter = new Services_Gnip_Filter("myActivityFilter", 'true', 'http://mysite.com/processingscript.php', $rules);
+    // while you have the filter object you can add or remove rules
     $filter->addRules(array(new Services_Gnip_Rule("actor", "jvaleski")));
     $filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
-    $status = $gnip->createFilter("gnipherald", $filter);
+    $status = $gnip->createFilter("gnipherald", $filter, "gnip");
     echo $status;
 	
 If you've turned debugging on, you'll see that the postURL in this case is invalid.
 
 You can view your filters by running:
-	print_r($gnip->getFilter("gnipherald", "myActivityFilter"));
+	print_r($gnip->getFilter("gnipherald", "myActivityFilter", "gnip"));
 
 You can see your filters by going to the Gnip site:
 	https://api-v21.gnip.com/gnip/publishers/gnipherald/filters
@@ -252,13 +253,13 @@ two new rules to the filter we created above, myNotificationFilter:
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
 
-    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter", "gnip");
+    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter");
     $filter->addRules(array(new Services_Gnip_Rule("actor", "sam"),
                             new Services_Gnip_Rule("actor", "judy")));
 
-    $gnip->updateFilter("gnipherald", $filter);
+    $gnip->updateFilter("gnipherald", $filter, "gnip");
 	
-    print_r($gnip->getFilter("gnipherald", "myNotificationFilter"));
+    print_r($gnip->getFilter("gnipherald", "myNotificationFilter", "gnip"));
 
 You should see the following actors: mary, you, sam, jvaleski, judy
 
@@ -266,11 +267,11 @@ Adding rules in large batches is the fastest way to augment an existing Filter, 
 for Filters that already contain large rule sets, batch additions must be used to 
 change the Filter.  Here's an example of a batch add:
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
     $rulesArray = array(new Services_Gnip_Rule("actor", "bob"),
                         new Services_Gnip_Rule("actor", "sally"),
                         new Services_Gnip_Rule("actor", "joe"));
-    echo $gnip->addBatchRules("gnipherald", "myNotificationFilter", $rulesArray);
+    echo $gnip->addBatchRules("gnipherald", "myNotificationFilter", $rulesArray, "gnip");
 
 If the server receives the message successfully, you should receive an HTTP response code 
 of 200 and a message of "Success".  Note, Gnip processes rule addition asynchronously, so 
@@ -280,12 +281,12 @@ to the Filter.
 You can test if a rule already exists by calling:
 
     $rule = new Services_Gnip_Rule("actor", "bob");
-    if($gnip->ruleExists("gnipherald", "myNotificationFilter", $rule)){
+    if($gnip->ruleExists("gnipherald", "myNotificationFilter", $rule, "gnip")){
         echo "yay, the rule exists!";
     }
 
 If you like, you can delete the rule:
-    echo $gnip->deleteRule("gnipherald", "myNotificationFilter", $rule);
+    echo $gnip->deleteRule("gnipherald", "myNotificationFilter", $rule, "gnip");
 	
 You should see a response message of "Success".
 
@@ -294,9 +295,9 @@ You should see a response message of "Success".
 Filters can be easily deleted. The following code sample deletes the filter 
 that was created above:
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
-    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter");
-    echo $gnip->deleteFilter("gnipherald", $filter);
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
+    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter", "gnip");
+    echo $gnip->deleteFilter("gnipherald", $filter, "gnip");
 	
 You should get a response message of "Success".
 	
@@ -307,9 +308,9 @@ You should get a response message of "Success".
 NOTE: You must create a filter (see Example 2 above) before you can view 
 activities for a publisher that you do not own.
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
-    $filter = $gnip->getFilter("gnipherald", "myActivityFilter");
-    $activities = $gnip->getFilterActivities("gnipherald", $filter);
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
+    $filter = $gnip->getFilter("gnipherald", "myActivityFilter", "gnip");
+    $activities = $gnip->getFilterActivities("gnipherald", $filter, "current", "gnip");
 
 You can also view the current activity bucket via web on the Gnip site:
     https://api-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/current.xml
@@ -319,10 +320,10 @@ You can also view the current activity bucket via web on the Gnip site:
 NOTE: You must create a filter (see Example 3 below) before you can view 
 activities for a publisher that you do not own.
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "gnip");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
     $pub = new Services_Gnip_Publisher("gnipherald");
-    $filter = $gnip->getFilter("gnipherald", "myActivityFilter");
-    $activities = $gnip->getFilterActivities("gnipherald", $filter, time() -120);
+    $filter = $gnip->getFilter("gnipherald", "myActivityFilter", "gnip");
+    $activities = $gnip->getFilterActivities("gnipherald", $filter, time() -120, "gnip");
 
 You can see the running list of activity buckets on the Gnip site:
     https://api-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/
@@ -347,14 +348,14 @@ Gnip:
 	
 === Example 1: Create a publisher
 	
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "my");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
 	
     $name = "myPublisher";
     $supported_rule_types = array(new Services_Gnip_Rule_Type('actor'),
                                   new Services_Gnip_Rule_Type('tag'));
     $publisher = new Services_Gnip_Publisher($name, $supported_rule_types);
 
-    echo $gnip->createPublisher($publisher);
+    echo $gnip->createPublisher($publisher, "my");
 	
 You should see a response message of "Success".
 
@@ -363,13 +364,13 @@ You should see a response message of "Success".
 The following example takes an existing publisher and updates it with a new set 
 of supported rule types.
 	
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "my");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
 	
-    $pub = $gnip->getPublisher("myPublisher");
+    $pub = $gnip->getPublisher("myPublisher", "my");
 
     $rule_types = array(new Services_Gnip_Rule_Type('to'));
     $pub->addRuleTypes($rule_types);
-    echo $gnip->updatePublisher($pub);	
+    echo $gnip->updatePublisher($pub, "my");	
 	
     You should see a response message of "Success".
 
@@ -382,16 +383,24 @@ https://api-v21.gnip.com/schema/gnip.xsd
 
 You can also review the class files for specific definitions.
 
-    $gnip = new Services_Gnip("<your account email>", "<your account password>", "my");
+    $gnip = new Services_Gnip("<your account email>", "<your account password>");
     
     $place = array(new Services_Gnip_Place("38.2638886 -106.126131", 5.343, 4, "blah", "Chloride Mine", "nearby"));
     $payload = new Services_Gnip_Payload("raw", "title", "body", 
-                            array("mediaURL" => "http://gnipcentral.com", 
-                                "height" => "200", 
-                                "width" => "200", 
-                                "duration" => "107",
-                                "mimeType" => "video/quicktime", 
-                                "type" => "movie"));
+                            array(
+                                array("mediaURL" => "http://gnip.com", 
+                                    "height" => "300", 
+                                    "width" => "300", 
+                                    "duration" => "120",
+                                    "mimeType" => "video/quicktime", 
+                                    "type" => "movie"),
+                                array("mediaURL" => "http://gnipcentral.com", 
+                                    "height" => "200", 
+                                    "width" => "200", 
+                                    "duration" => "107",
+                                    "mimeType" => "video/quicktime", 
+                                    "type" => "movie"))
+                                );
 	
     $activity = new Services_Gnip_Activity(
                 "2008-07-02T11:16:16+00:00", 
@@ -423,8 +432,8 @@ You can also review the class files for specific definitions.
                 $payload);
                                            
                                            	
-    $mypub = $gnip->getPublisher("myPublisher");
-    echo $gnip->publish($mypub, array($activity));
+    $mypub = $gnip->getPublisher("myPublisher", "my");
+    echo $gnip->publish($mypub, array($activity), "my");
 	
 You should see a response message of "Success".
 
