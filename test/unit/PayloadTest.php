@@ -56,14 +56,14 @@ class PayloadTest extends PHPUnit_Framework_TestCase
     function testFromXmlNullStuff()
     {
         $xml = '<payload><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>';
-        $payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
+        $payload = Services_Gnip_Payload::fromXML($xml);
         $this->assertEquals("raw", $payload->decodedRaw());        
     }
 
     function testFromXml()
     {
         $xml = '<payload><title>title</title><body>body</body><mediaURL height="200" width="200" duration="107" mimeType="video/quicktime"  type="movie">http://www.gnipcentral.com</mediaURL><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>';
-        $payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
+        $payload = Services_Gnip_Payload::fromXML($xml);
         $this->assertEquals("title", $payload->title);
         $this->assertEquals("body", $payload->body);
         $this->assertContains(array("mediaURL" => "http://www.gnipcentral.com", "height" => "200", "width" => "200", "duration" => "107", "mimeType" => "video/quicktime", "type" => "movie"), $payload->mediaURL);
@@ -75,7 +75,7 @@ class PayloadTest extends PHPUnit_Framework_TestCase
         $xml = '<payload><title>title</title><body>body</body><mediaURL type="movie" mimeType="video/quicktime">http://www.gnipcentral.com</mediaURL>'.
             '<mediaURL type="graphic" mimeType="image/png">http://flickr.com/tour</mediaURL>'.
             '<raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>';
-        $payload = Services_Gnip_Payload::fromXML(new SimpleXMLElement($xml));
+        $payload = Services_Gnip_Payload::fromXML($xml);
         $this->assertEquals("title", $payload->title);
         $this->assertEquals("body", $payload->body);
         $this->assertContains(array("mediaURL" => "http://www.gnipcentral.com", "type" => "movie", "mimeType" => "video/quicktime"), $payload->mediaURL);

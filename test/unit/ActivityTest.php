@@ -271,7 +271,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
             '<regardingURL metaURL="http://blogger.com/users/mary">http://blogger.com/users/posts/mary</regardingURL>'.
             '</activity>';
 
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
@@ -293,7 +293,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
             '<action>post</action>'.
             '</activity>';
 
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
@@ -315,7 +315,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
             '<action>post</action>'.
             '<place><point>45.256 -71.92</point></place>'.
             '</activity>';
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->place, $a->place);
@@ -328,7 +328,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
             '<action>post</action>'.
             '<payload><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
             '</activity>';
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->payload, $a->payload);
@@ -356,7 +356,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                 '<regardingURL>http://blogger.com/users/posts/james</regardingURL>'.
                 '</activity>';
 
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->sourceArray, $a->source);
@@ -380,7 +380,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                 '<place><point>77.900 - 23.998</point></place>'.
                 '</activity>';
 
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->placeArray, $a->place);
@@ -393,7 +393,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase
                 '<action>post</action>'.
                 '<payload><title>title</title><body>body</body><mediaURL type="image" mimeType="image/png">http://www.flickr.com/tour</mediaURL><mediaURL type="movie" mimeType="video/quicktime">http://www.gnipcentral.com/login</mediaURL><raw>H4sIAAAAAAAAAytKLAcAVduzGgMAAAA=</raw></payload>'.
                 '</activity>';
-        $a = Services_Gnip_Activity::fromXML(new SimpleXMLElement($xml));
+        $a = Services_Gnip_Activity::fromXML($xml);
         $this->assertEquals($this->at, $a->at->format(DATE_ATOM));
         $this->assertEquals($this->action, $a->action);
         $this->assertEquals($this->payloadArray, $a->payload);

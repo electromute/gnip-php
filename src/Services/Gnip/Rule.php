@@ -1,34 +1,27 @@
 <?php
-class Services_Gnip_Rule
-{
+class Services_Gnip_Rule {
     var $type;
     var $value;
 
 
     /**
-     * Constructor.
+     * Creates a Services_Gnip_Rule object.
      * 
      * @param string $type
      * @param string $value
-     * 
-     * Creates a Services_Gnip_Rule object.
      */
-    public function __construct($type, $value)
-    {
+    public function __construct($type, $value) {
         $this->type = trim($type);
         $this->value = trim($value);
     }
 
 
     /**
-     * To XML.
+     * Converts the rules to properly formatted XML.
      * 
      * @return XML formatted rule data
-     *
-     * Converts the rules to properly formatted XML.
      */
-    public function toXML()
-    {
+    public function toXML() {
         $doc = new GnipDOMDocument();
         $ruleRoot = $doc->createElement('rule', $this->value);
         $doc->appendChild($ruleRoot);
@@ -41,45 +34,38 @@ class Services_Gnip_Rule
 
 
     /**
-     * From XML.
+     * Converts XML formatted rule to Services_Gnip_Rule object.
      * 
      * @param $xml SimpleXMLElelement XML data
      * @return object Services_Gnip_Rule
-     *
-     * Converts XML formatted rule to Services_Gnip_Rule object.
      */
-    public function fromXML(SimpleXMLElement $xml){
-        return new Services_Gnip_Rule($xml["type"], strval($xml));
+    public function fromXML($xml) {
+        $xml_element = new SimpleXMLElement($xml);
+        return new Services_Gnip_Rule($xml_element["type"], strval($xml_element));
     }
 
 
     /**
-     * Get create rule URL.
+     * Returns the URL to send create rule request to belonging
+     * to a given filter and publisher.
      * 
      * @param string $publisherName name of publisher
      * @param string $filterName name of filter
      * @return string URL
-     *
-     * Returns the URL to send create rule request to belonging
-     * to a given filter and publisher.
      */
-    public function getCreateUrl($publisherName, $filterName)
-    {
+    public function getCreateUrl($publisherName, $filterName) {
         return "/publishers/" . $publisherName . "/filters/" . $filterName . "/rules.xml";
     }
 
     /**
-     * Get rule URL.
+     * Returns the URL of a given filter by name belonging to 
+     * a given publisher.
      * 
      * @param string $publisherName name of publisher
      * @param string $filterName name of filter
      * @return string URL
-     *
-     * Returns the URL of a given filter by name belonging to 
-     * a given publisher.
      */
-    public function getUrl($publisherName, $filterName)
-    {
+    public function getUrl($publisherName, $filterName) {
         return "/publishers/" . $publisherName ."/filters/" . $filterName ."/rules.xml";
     }
 

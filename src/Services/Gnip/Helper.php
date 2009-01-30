@@ -2,24 +2,20 @@
 /**
  * This class provides basic functionality help for all Gnip classes.
  */
-class Services_Gnip_Helper
-{
+class Services_Gnip_Helper {
     private $username;
     private $password;
     private $base_url;
 
 
     /**
-     * Constructor.
+     * Creates a Services_Gnip_Helper object.
      * 
      * @param string $username
      * @param string $password
      * @param string $base_url
-     * 
-     * Creates a Services_Gnip_Helper object.
      */
-    function __construct($username, $password, $base_url)
-    {
+    function __construct($username, $password, $base_url) {
         $this->username = $username;
         $this->password = $password;
         $this->base_url = $base_url;
@@ -27,30 +23,24 @@ class Services_Gnip_Helper
 
 
     /**
-     * HTTP Get.
+     * Performs an HTTP GET request to a given URL.
      * 
      * @param string $url
      * @return string status of request
-     *
-     * Performs an HTTP GET request to a given URL.
      */
-    function doHttpGet($url)
-    {
+    function doHttpGet($url) {
         return $this->doRequest($this->base_url.$url);
     }
 
 
     /**
-     * HTTP Post.
+     * Performs an HTTP POST request to a given URL.
      * 
      * @param string $url
      * @param string $data xml formatted data
      * @return string status of request
-     *
-     * Performs an HTTP POST request to a given URL.
      */
-    function doHttpPost($url, $data)
-    {
+    function doHttpPost($url, $data) {
         $this->validate($data);
         if($data != null)
             $data = gzencode($data);
@@ -61,16 +51,13 @@ class Services_Gnip_Helper
 
 
     /**
-     * HTTP Put.
+     * Performs an HTTP PUT request to a given URL.
      * 
      * @param string $url
      * @param string $data xml formatted data
      * @return string status of request
-     *
-     * Performs an HTTP PUT request to a given URL.
      */
-    function doHttpPut($url, $data)
-    {
+    function doHttpPut($url, $data) {
         $this->validate($data);
         if($data != null)
             $data = gzencode($data);
@@ -85,29 +72,23 @@ class Services_Gnip_Helper
 
 
 	/**
-     * HTTP Delete.
+     * Performs an HTTP DELETE request for a given URL.
      * 
 	 * @param string $url
      * @return string status of request
-	 *
-     * Performs an HTTP DELETE request for a given URL.
      */
-    function doHttpDelete($url)
-    {
+    function doHttpDelete($url) {
         return $this->doRequest($this->base_url.$url, array(CURLOPT_CUSTOMREQUEST => "DELETE"));
     }
     
 
     /**
-     * Validate.
+     * Validates the xml data against Gnip schema.
      * 
      * @param string $xml
      * @return string xml you passed in
-     *
-     * Validates the xml data against Gnip schema. 
      */
-    private function validate($xml) 
-    {
+    private function validate($xml) {
         $doc = new GnipDOMDocument();
         $doc->loadXML($xml); 
         $doc->schemaValidate(dirname(__FILE__) . '/gnip.xsd'); 
@@ -116,17 +97,15 @@ class Services_Gnip_Helper
 
     /**
      * Adjust a time so that it corresponds with Gnip time.
-     *
-     * @param long $theTime time to adjust
-     * @return long containing the corrected time
-     *
      * This method gets the current time from the Gnip server,
      * gets the current local time and determines the difference
      * between the two. It then adjusts the passed in time to
      * account for the difference.
+     *
+     * @param long $theTime time to adjust
+     * @return long containing the corrected time
      */
-    function syncWithGnipClock($theTime)
-    {
+    function syncWithGnipClock($theTime) {
         // Do HTTP HEAD request
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->base_url);
@@ -156,32 +135,26 @@ class Services_Gnip_Helper
     }
 
     /**
-     * Convert the time to a valid bucket.
+     * Converts the time passed in to a string of the
+     * form YYYYMMDDHHMM which corresponds to the bucket name.
      *
      * @param long $theTime time to convert to a string
      * @return string representing time
-     *
-     * Converts the time passed in to a string of the
-     * form YYYYMMDDHHMM.
      */
-    function bucketName($time)
-    {
+    function bucketName($time) {
         return gmdate("YmdHi", $time);
     }
 
 
     /**
-     * Do a CURL request.
+     * Performs a CURL operation based on the array of curl_options sent.
      * 
      * @param string $url
      * @param array $curl_options
      * @param boolean $isGzipEncoded default is false
      * @return string response
-     *
-     * Performs a CURL operation based on the array of curl_options sent.
      */
-    function doRequest($url, $curl_options = array(), $isGzipEncoded = false)
-    {
+    function doRequest($url, $curl_options = array(), $isGzipEncoded = false) {
         $curl = curl_init();
 
         $loginInfo = sprintf("%s:%s",$this->username,$this->password);
@@ -195,7 +168,7 @@ class Services_Gnip_Helper
         curl_setopt($curl, CURLOPT_USERPWD, $loginInfo);
 
         curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
