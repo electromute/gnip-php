@@ -33,7 +33,7 @@ class PlaceTest extends PHPUnit_Framework_TestCase
     function testFromXml()
     {
         $xml = "<place><point>38.2638886 -106.126131</point><elev>5.343</elev><floor>4</floor><featuretypetag>blah</featuretypetag><featurename>Chloride Mine</featurename><relationshiptag>nearby</relationshiptag></place>";
-        $place = Services_Gnip_Place::fromXML(new SimpleXMLElement($xml));
+        $place = Services_Gnip_Place::fromXML($xml);
         $this->assertEquals("38.2638886 -106.126131", $place->point);
         $this->assertEquals(5.343, $place->elev);
         $this->assertEquals(4, $place->floor);

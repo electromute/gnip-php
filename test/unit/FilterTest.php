@@ -88,7 +88,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
             new Services_Gnip_Rule("actor", "you"), 
             new Services_Gnip_Rule("actor", "bob"));
 
-        $f = Services_Gnip_Filter::fromXml(new SimpleXMLElement($xml));
+        $f = Services_Gnip_Filter::fromXml($xml);
         $this->assertEquals("test", $f->name);
         $this->assertEquals("true", $f->fullData);
         $this->assertEquals("", $f->postURL);
@@ -108,7 +108,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
             new Services_Gnip_Rule("actor", "you"), 
             new Services_Gnip_Rule("actor", "bob"));
 
-        $f = Services_Gnip_Filter::fromXml(new SimpleXMLElement($xml));
+        $f = Services_Gnip_Filter::fromXml($xml);
         $this->assertEquals("test", $f->name);
         $this->assertEquals("true", $f->fullData);
         $this->assertEquals("http://example.com", $f->postURL);

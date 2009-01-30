@@ -14,7 +14,7 @@ class RuleTest extends PHPUnit_Framework_TestCase
     {
         $xml = '<rule type="actor">testActor</rule>';
 
-        $rule = Services_Gnip_Rule::fromXml(new SimpleXMLElement($xml));
+        $rule = Services_Gnip_Rule::fromXml($xml);
         $this->assertEquals("actor", $rule->type);
         $this->assertEquals("testActor", $rule->value);
     }

@@ -1,6 +1,5 @@
 <?php
-class Services_Gnip_Place
-{
+class Services_Gnip_Place {
     public $point;
     public $elev;
     public $floor;
@@ -10,7 +9,7 @@ class Services_Gnip_Place
 
 
     /**
-     * Constructor. More information on Geo data can be found at http://georss.org/
+     * Creates a Services_Gnip_Place object. All elements are optional.
      * 
      * @param string $point latitude and longitude separated by a space. optional
      * @param float $elev elevation optional
@@ -18,9 +17,6 @@ class Services_Gnip_Place
      * @param string $featuretypetag location type (city, county, state, etc.) optional
      * @param string $featurename name of location (Boulder, Colorado, San Francisco, etc.) optional
      * @param string $relationshiptag relationship to lat/long (center, etc.) optional
-     * 
-     * Creates a Services_Gnip_Place object. All elements are optional.
-     * 
      */
     public function __construct($point = null, $elev = null, $floor = null, $featuretypetag = null, $featurename = null, $relationshiptag = null)
     {
@@ -33,14 +29,12 @@ class Services_Gnip_Place
     }
 
     /**
-     * To XML.
+     * Converts the place to properly formatted XML.
      * 
      * @param object $doc DOMDocument object
      * @param object $root DOMDocument root
-     *
-     * Converts the place to properly formatted XML.
      */
-    public function toXML($doc, $root){
+    public function toXML($doc, $root) {
         $place = $doc->createElement('place');
         if ($this->point != null) {
             $place->appendChild($doc->createElement('point', $this->point));
@@ -67,21 +61,19 @@ class Services_Gnip_Place
     }
 
     /**
-     * From XML.
-     * 
-     * @param $xml XML data
-     * @return object Services_Gnip_Place
-     *
      * Converts XML formatted place to Services_Gnip_Place object.
+     * 
+     * @param string $xml XML data
+     * @return object Services_Gnip_Place
      */
-    public function fromXML($xml)
-    {
-       $found_point = strlen(strval($xml->point)) ? strval($xml->point) : null;
-       $found_elev = strlen(strval($xml->elev)) ? strval($xml->elev) : null;
-       $found_floor = strlen(strval($xml->floor)) ? strval($xml->floor) : null;
-       $found_feattype = strlen(strval($xml->featuretypetag)) ? strval($xml->featuretypetag) : null;
-       $found_featname = strlen(strval($xml->featurename)) ? strval($xml->featurename) : null;
-       $found_relate = strlen(strval($xml->relationshiptag)) ? strval($xml->relationshiptag) : null;
+    public function fromXML($xml) {
+        $xml_element = new SimpleXMLElement($xml);
+        $found_point = strlen(strval($xml_element->point)) ? strval($xml_element->point) : null;
+        $found_elev = strlen(strval($xml_element->elev)) ? strval($xml_element->elev) : null;
+        $found_floor = strlen(strval($xml_element->floor)) ? strval($xml_element->floor) : null;
+        $found_feattype = strlen(strval($xml_element->featuretypetag)) ? strval($xml_element->featuretypetag) : null;
+        $found_featname = strlen(strval($xml_element->featurename)) ? strval($xml_element->featurename) : null;
+        $found_relate = strlen(strval($xml_element->relationshiptag)) ? strval($xml_element->relationshiptag) : null;
 
        return new Services_Gnip_Place($found_point, $found_elev, $found_floor, $found_feattype, $found_featname, $found_relate);
     }

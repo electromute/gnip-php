@@ -1,6 +1,5 @@
 <?php
-class Services_Gnip_Payload
-{
+class Services_Gnip_Payload {
     public $title;
     public $body;
     public $mediaURL;
@@ -9,7 +8,7 @@ class Services_Gnip_Payload
 
 
     /**
-     * Constructor.
+     * Creates a Services_Gnip_Payload object.
      * 
      * @param string $raw required string representation of the dataset
      * @param string $title optional
@@ -21,12 +20,8 @@ class Services_Gnip_Payload
      * duration
      * mimeType
      * type
-     * 
-     * Creates a Services_Gnip_Payload object.
-     * 
      */
-    public function __construct($raw, $title = null, $body = null, $mediaURL = null)
-    {
+    public function __construct($raw, $title = null, $body = null, $mediaURL = null) {
         $this->title = ($title != null) ? trim($title) : null;
         $this->body = ($body != null) ? trim($body) : null;
         $this->mediaURL = (is_array($mediaURL)) ? $mediaURL : null;
@@ -35,29 +30,24 @@ class Services_Gnip_Payload
 
 
     /**
-     * Decode Raw.
-     * 
-     * @return object Services_Gnip_Payload
-     * 
      * Decodes a base64 and gzipped representation of the raw data 
      * from a publisher.
+     * 
+     * @return object Services_Gnip_Payload
      */
-    public function decodedRaw()
-    {
+    public function decodedRaw() {
         if($this->raw != null)
             return Services_Gnip_Payload::gzdecode(base64_decode($this->raw));
         return $this->raw;
     }
 
     /**
-     * To XML.
+     * Converts the place to properly formatted XML..
      * 
      * @param object $doc DOMDocument object
      * @param object $root DOMDocument root
-     *
-     * Converts the place to properly formatted XML.
      */
-    public function toXML($doc, $root){
+    public function toXML($doc, $root) {
         $payload = $doc->createElement('payload');
         if ($this->title != null){
             $payload->appendChild($doc->createElement('title', $this->title));
@@ -76,32 +66,30 @@ class Services_Gnip_Payload
 
 
     /**
-     * From XML.
-     * 
-     * @param $xml XML data
-     * @return object Services_Gnip_Payload
-     *
      * Converts XML formatted payload to Services_Gnip_Payload object.
+     * 
+     * @param string $xml XML data
+     * @return object Services_Gnip_Payload
      */
-    public static function fromXML($xml)
-    {
-        $found_title = strlen(strval($xml->title)) ? strval($xml->title) : null;
-        $found_body = strlen(strval($xml->body)) ? strval($xml->body) : null;
-        $result = $xml->xpath('mediaURL');
-        $nodesNum = count($result);
+    public static function fromXML($xml) {
+        $xml_element = new SimpleXMLElement($xml);
+        $found_title = strlen(strval($xml_element->title)) ? strval($xml_element->title) : null;
+        $found_body = strlen(strval($xml_element->body)) ? strval($xml_element->body) : null;
+        $result = $xml_element->xpath('mediaURL');
+        $nodes_num = count($result);
         $found_mediaURL = array();
         
         if (!empty($result)){
-        if($nodesNum >= 1){
+        if($nodes_num >= 1){
             foreach ($result as $key => $val){
                 if(is_object($val)){
-                    $mediaStuff['mediaURL'] = strval($val[0]);
-                    foreach($val[0]->attributes() as $attrName => $attrVal) {
-                        if (strlen (strval($attrVal))){
-                            $mediaStuff[$attrName] = strval($attrVal);
+                    $media_stuff['mediaURL'] = strval($val[0]);
+                    foreach($val[0]->attributes() as $attr_name => $attr_val) {
+                        if (strlen (strval($attr_val))){
+                            $media_stuff[$attr_name] = strval($attr_val);
                         }
                     }
-                    $found_mediaURL[] = $mediaStuff;
+                    $found_mediaURL[] = $media_stuff;
                 }
             }
         } else {
@@ -110,18 +98,16 @@ class Services_Gnip_Payload
         } else {
             $found_mediaURL = null;
         }
-        $found_raw = Services_Gnip_Payload::gzdecode(base64_decode($xml->raw));
+        $found_raw = Services_Gnip_Payload::gzdecode(base64_decode($xml_element->raw));
         
         return new Services_Gnip_Payload($found_raw, $found_title, $found_body, $found_mediaURL);
     }
 
 
     /**
-     * Gzip Decode.
+     * Uncompresses Gzipped data and returns the resulting String.
      * 
      * @return string uncompressed data
-     * 
-     * Uncompresses Gzipped data and returns the resulting String.
      */
     private static function gzdecode ($data)
     {
