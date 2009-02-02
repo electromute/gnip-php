@@ -1,7 +1,7 @@
 Welcome to the Gnip PHP convenience library!
 
 == VERSION ==
-This library complies with API version 2.1
+This library complies with API version 2.1 (demo)
 
 == Overview ==
 
@@ -13,7 +13,7 @@ Dependencies can be installed via command line or by running the install script.
 
 = Required Dependencies =
   - php5 with SimpleXML (included by default in PHP5, unless disabled)
-  - A user account on Gnip http://api-v21.gnip.com/
+  - A user account on Gnip https://demo-v21.gnip.com/
 
 = Optional Dependencies =
   - PEAR
@@ -35,7 +35,7 @@ If you do not wish to install the optional dependencies, you can get Gnip up
 and running fairly quickly.
 
 Gnip has a test publisher "gnipherald":
-https://api-v21.gnip.com/publishers/gnipherald/notification/
+https://demo-v21.gnip.com/publishers/gnipherald/notification/
 
 The following example retrieves notification data from the current bucket for 
 gnipherald. Please note that both the current and 0-1 minute old buckets are not 
@@ -143,7 +143,7 @@ get the publisher and request the stream. These examples uses the publisher
     print_r($notifications);
 
 You can also view the current notifications bucket via web on the Gnip site:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/notification/current.xml
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/notification/current.xml
 	
 	
 *** Notification data stream request with optional date param ***
@@ -154,7 +154,7 @@ You can also view the current notifications bucket via web on the Gnip site:
     print_r($notifications);
 
 You can see the running list of notification buckets on the Gnip site:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/notification/
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/notification/
 	
 === Example 2: Filter notifications or activities by a set of users ===
 
@@ -203,10 +203,10 @@ You can view your filters by running:
 Your actors list should be (not necessarily in this order): you, mary, jvaleski
 
 You can also see your filters list for each publisher by going to the Gnip site:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/filters
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters
 	
 You can view notification buckets on the Gnip site by going to:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/filters/myNotificationFilter/notification
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myNotificationFilter/notification
 	
 *** Activity Filter with POST URL ***
 
@@ -240,7 +240,7 @@ You can view your filters by running:
 	print_r($gnip->getFilter("gnipherald", "myActivityFilter", "gnip"));
 
 You can see your filters by going to the Gnip site:
-	https://api-v21.gnip.com/gnip/publishers/gnipherald/filters
+	https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters
 Your actors list should be (not necessarily in this order): you, mary, jvaleski
 
 Once data is available, you can see it here:
@@ -313,7 +313,7 @@ activities for a publisher that you do not own.
     $activities = $gnip->getFilterActivities("gnipherald", $filter, "current", "gnip");
 
 You can also view the current activity bucket via web on the Gnip site:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/current.xml
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/current.xml
 
 *** Activity Data Stream Request with Date Param ***
 
@@ -326,7 +326,7 @@ activities for a publisher that you do not own.
     $activities = $gnip->getFilterActivities("gnipherald", $filter, time() -120, "gnip");
 
 You can see the running list of activity buckets on the Gnip site:
-    https://api-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/
+    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/
 
 
 ==== Publisher Actions ====
@@ -379,7 +379,7 @@ of supported rule types.
 Here is how you can publish activities to the activity stream. You'll want to review the
 Gnip xsd for specifics on what is required/optional. 
 
-https://api-v21.gnip.com/schema/gnip.xsd
+https://demo-v21.gnip.com/schema/gnip.xsd
 
 You can also review the class files for specific definitions.
 
@@ -444,6 +444,7 @@ Contributions to this library are welcome.
 Source :: git://github.com/gnip/gnip-php.git
 Community Site :: http://groups.google.com/group/gnip-community
 Mailing List :: gnip-community@googlegroups.com
+Twitter Status :: @gnipsupport
  
 To get started create a clone of the main repository,
 <git://github.com/gnip/gnip-php.git>, and start improving it. Feel
