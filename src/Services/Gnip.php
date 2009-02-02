@@ -12,6 +12,7 @@ require_once 'Gnip/Place.php';
 
 
 class Services_Gnip {
+
     static public $uri = "https://demo-v21.gnip.com";
     public $helper;
     public $debug;
