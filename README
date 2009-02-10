@@ -34,11 +34,11 @@ Resource links for the above dependencies can be found here:
 If you do not wish to install the optional dependencies, you can get Gnip up 
 and running fairly quickly.
 
-Gnip has a test publisher "gnipherald":
-https://demo-v21.gnip.com/publishers/gnipherald/notification/
+Gnip has a test publisher "gnip-sample":
+https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/
 
 The following example retrieves notification data from the current bucket for 
-gnipherald. Please note that both the current and 0-1 minute old buckets are not 
+gnip-sample. Please note that both the current and 0-1 minute old buckets are not 
 static and therefore will contain a variable amount of data, but you'll get 
 quick feedback to know if you can connect and access the public notification data.
 
@@ -48,7 +48,7 @@ and "my" for publishers you own. Please see Gnip.php for documentation.
 	<?
 	require_once 'src/Services/Gnip.php';
 	$gnip = new Services_Gnip("<your account email>", "<your account password>");
-	$pub = new Services_Gnip_Publisher("gnipherald");
+	$pub = new Services_Gnip_Publisher("gnip-sample");
 	$notifications = $gnip->getPublisherNotifications($pub, "current", "gnip");
 	print_r($notifications);
 	?>
@@ -133,28 +133,28 @@ As a consumer one thing you might be interested in immediately is
 grabbing data from a publisher. To do this you must create a connection to Gnip 
 using your username and password.  Once the connection is established you can 
 get the publisher and request the stream. These examples uses the publisher 
-"gnipherald".
+"gnip-sample".
 
 *** Notification data stream request ***
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
-    $pub = new Services_Gnip_Publisher("gnipherald");
+    $pub = new Services_Gnip_Publisher("gnip-sample");
     $notifications = $gnip->getPublisherNotifications($pub, "current", "gnip");
     print_r($notifications);
 
 You can also view the current notifications bucket via web on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/notification/current.xml
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/current.xml
 	
 	
 *** Notification data stream request with optional date param ***
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
-    $pub = new Services_Gnip_Publisher("gnipherald");
+    $pub = new Services_Gnip_Publisher("gnip-sample");
     $notifications = $gnip->getPublisherNotifications($pub, time() -120, "gnip");
     print_r($notifications);
 
 You can see the running list of notification buckets on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/notification/
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/
 	
 === Example 2: Filter notifications or activities by a set of users ===
 
@@ -167,7 +167,7 @@ delicious, etc.).
 You can only retrieve activity data (full data) from publishers that you don't own 
 by creating a filter.
 
-The test actor for "gnipherald" is "jvaleski". To test your filter, be sure 
+The test actor for "gnip-sample" is "jvaleski". To test your filter, be sure 
 "jvaleski"appears in your rule set.
 
 The following examples illustrate creating filters for both notification and activity 
@@ -179,7 +179,7 @@ Note that the full data (second parameter) of the filter object must be set to
 false. This example does not include a POST Url, meaning you'll have to poll 
 Gnip for the results when you need them. The following snippet creates (and 
 retrieves) a notification filter called "myNotificationFilter" on the publisher 
-gnipherald.
+gnip-sample.
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
 
@@ -191,22 +191,22 @@ gnipherald.
     $filter->addRules(array(new Services_Gnip_Rule("actor", "jvaleski")));
     $filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
-    $status = $gnip->createFilter("gnipherald", $filter, "gnip");
+    $status = $gnip->createFilter("gnip-sample", $filter, "gnip");
     echo $status;
     
 The server will return :
 <result>Success</result>
 	
 You can view your filters by running:
-    print_r($gnip->getFilter("gnipherald", "myNotificationFilter", "gnip"));
+    print_r($gnip->getFilter("gnip-sample", "myNotificationFilter", "gnip"));
 
 Your actors list should be (not necessarily in this order): you, mary, jvaleski
 
 You can also see your filters list for each publisher by going to the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters
 	
 You can view notification buckets on the Gnip site by going to:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myNotificationFilter/notification
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters/myNotificationFilter/notification
 	
 *** Activity Filter with POST URL ***
 
@@ -214,7 +214,7 @@ Note that the full data (second parameter) of the filter object must be set to
 true to view activity data. This example includes the optional POST Url, 
 meaning Gnip will POST via an HTTP HEAD request to this URL. The following 
 snippet creates (and gets) a notification filter called "myActivityFilter" on 
-the publisher gnipherald. 
+the publisher gnip-sample. 
 
 If you want notifications to be sent to a script on your server for processing, 
 you must ensure that the postURL parameter you set responds successfully to an 
@@ -231,20 +231,20 @@ url is invalid).
     $filter->addRules(array(new Services_Gnip_Rule("actor", "jvaleski")));
     $filter->removeRules(array(new Services_Gnip_Rule("actor", "me")));
 
-    $status = $gnip->createFilter("gnipherald", $filter, "gnip");
+    $status = $gnip->createFilter("gnip-sample", $filter, "gnip");
     echo $status;
 	
 If you've turned debugging on, you'll see that the postURL in this case is invalid.
 
 You can view your filters by running:
-	print_r($gnip->getFilter("gnipherald", "myActivityFilter", "gnip"));
+	print_r($gnip->getFilter("gnip-sample", "myActivityFilter", "gnip"));
 
 You can see your filters by going to the Gnip site:
-	https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters
+	https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters
 Your actors list should be (not necessarily in this order): you, mary, jvaleski
 
 Once data is available, you can see it here:
-	https://api-v21.gnip.com/gnip/publishers/gnipherald/activity
+	https://api-v21.gnip.com/gnip/publishers/gnip-sample/activity
 	
 === Example 3: Add rules to an existing filter ===
 
@@ -253,13 +253,13 @@ two new rules to the filter we created above, myNotificationFilter:
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
 
-    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter");
+    $filter = $gnip->getFilter("gnip-sample", "myNotificationFilter");
     $filter->addRules(array(new Services_Gnip_Rule("actor", "sam"),
                             new Services_Gnip_Rule("actor", "judy")));
 
-    $gnip->updateFilter("gnipherald", $filter, "gnip");
+    $gnip->updateFilter("gnip-sample", $filter, "gnip");
 	
-    print_r($gnip->getFilter("gnipherald", "myNotificationFilter", "gnip"));
+    print_r($gnip->getFilter("gnip-sample", "myNotificationFilter", "gnip"));
 
 You should see the following actors: mary, you, sam, jvaleski, judy
 
@@ -271,7 +271,7 @@ change the Filter.  Here's an example of a batch add:
     $rulesArray = array(new Services_Gnip_Rule("actor", "bob"),
                         new Services_Gnip_Rule("actor", "sally"),
                         new Services_Gnip_Rule("actor", "joe"));
-    echo $gnip->addBatchRules("gnipherald", "myNotificationFilter", $rulesArray, "gnip");
+    echo $gnip->addBatchRules("gnip-sample", "myNotificationFilter", $rulesArray, "gnip");
 
 If the server receives the message successfully, you should receive an HTTP response code 
 of 200 and a message of "Success".  Note, Gnip processes rule addition asynchronously, so 
@@ -281,12 +281,12 @@ to the Filter.
 You can test if a rule already exists by calling:
 
     $rule = new Services_Gnip_Rule("actor", "bob");
-    if($gnip->ruleExists("gnipherald", "myNotificationFilter", $rule, "gnip")){
+    if($gnip->ruleExists("gnip-sample", "myNotificationFilter", $rule, "gnip")){
         echo "yay, the rule exists!";
     }
 
 If you like, you can delete the rule:
-    echo $gnip->deleteRule("gnipherald", "myNotificationFilter", $rule, "gnip");
+    echo $gnip->deleteRule("gnip-sample", "myNotificationFilter", $rule, "gnip");
 	
 You should see a response message of "Success".
 
@@ -296,8 +296,8 @@ Filters can be easily deleted. The following code sample deletes the filter
 that was created above:
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
-    $filter = $gnip->getFilter("gnipherald", "myNotificationFilter", "gnip");
-    echo $gnip->deleteFilter("gnipherald", $filter, "gnip");
+    $filter = $gnip->getFilter("gnip-sample", "myNotificationFilter", "gnip");
+    echo $gnip->deleteFilter("gnip-sample", $filter, "gnip");
 	
 You should get a response message of "Success".
 	
@@ -309,11 +309,11 @@ NOTE: You must create a filter (see Example 2 above) before you can view
 activities for a publisher that you do not own.
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
-    $filter = $gnip->getFilter("gnipherald", "myActivityFilter", "gnip");
-    $activities = $gnip->getFilterActivities("gnipherald", $filter, "current", "gnip");
+    $filter = $gnip->getFilter("gnip-sample", "myActivityFilter", "gnip");
+    $activities = $gnip->getFilterActivities("gnip-sample", $filter, "current", "gnip");
 
 You can also view the current activity bucket via web on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/current.xml
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters/myActivityFilter/activity/current.xml
 
 *** Activity Data Stream Request with Date Param ***
 
@@ -321,12 +321,12 @@ NOTE: You must create a filter (see Example 3 below) before you can view
 activities for a publisher that you do not own.
 
     $gnip = new Services_Gnip("<your account email>", "<your account password>");
-    $pub = new Services_Gnip_Publisher("gnipherald");
-    $filter = $gnip->getFilter("gnipherald", "myActivityFilter", "gnip");
-    $activities = $gnip->getFilterActivities("gnipherald", $filter, time() -120, "gnip");
+    $pub = new Services_Gnip_Publisher("gnip-sample");
+    $filter = $gnip->getFilter("gnip-sample", "myActivityFilter", "gnip");
+    $activities = $gnip->getFilterActivities("gnip-sample", $filter, time() -120, "gnip");
 
 You can see the running list of activity buckets on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnipherald/filters/myActivityFilter/activity/
+    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters/myActivityFilter/activity/
 
 
 ==== Publisher Actions ====
