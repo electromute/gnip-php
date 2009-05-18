@@ -98,8 +98,12 @@ class Services_Gnip_Payload {
         } else {
             $found_mediaURL = null;
         }
-        $found_raw = Services_Gnip_Payload::gzdecode(base64_decode($xml_element->raw));
-        
+        $possibly_encoded = @Services_Gnip_Payload::gzdecode(base64_decode($xml_element->raw));
+        if(strlen(mb_detect_encoding($possibly_encoded, "auto", TRUE))){
+            $found_raw = Services_Gnip_Payload::gzdecode(base64_decode($xml_element->raw));
+        } else {
+            $found_raw = $xml_element->raw;
+        }
         return new Services_Gnip_Payload($found_raw, $found_title, $found_body, $found_mediaURL);
     }
 

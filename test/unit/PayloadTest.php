@@ -59,6 +59,13 @@ class PayloadTest extends PHPUnit_Framework_TestCase
         $payload = Services_Gnip_Payload::fromXML($xml);
         $this->assertEquals("raw", $payload->decodedRaw());        
     }
+    
+    function testFromXmlNonDecodedRaw()
+    {
+        $xml = '<payload><raw>This is just a regular old string.</raw></payload>';
+        $payload = Services_Gnip_Payload::fromXML($xml);
+        $this->assertEquals("This is just a regular old string.", $payload->decodedRaw());        
+    }
 
     function testFromXml()
     {
